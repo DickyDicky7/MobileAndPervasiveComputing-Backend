@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  app:
+    image: seminarcnpmbackend.azurecr.io/seminarcnpmbackend:latest
+    build: .
+    ports:
+      - "8088:8080"
