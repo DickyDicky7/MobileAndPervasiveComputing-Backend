@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  app:
+    image: seminar-cnpm-backend
+    build: .
+    ports:
+      - "8088:8080"
