@@ -25,5 +25,5 @@ RUN mkdir -p /data
 VOLUME ["/data"]
 
 # Start Redis and Node.js application
-CMD redis-server --daemonize yes --dir /data && npm run start
+CMD redis-server --daemonize yes --dir /data --appendonly yes && npm run start
 
