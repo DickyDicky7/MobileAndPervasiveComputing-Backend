@@ -21,10 +21,12 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.get('/', async (req, res) => {
   if (await redisClient.get("key") === null) {
     await redisClient.set("key", "value");
-    console.log("key - value not found");
+    res.json({ "answer": "key - value not found" });
+    return;
   }
   else {
-    console.log("key - value found");
+    res.json({ "answer": "key - value found" });
+    return;
   }
   res.render('index');
 });
