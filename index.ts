@@ -19,13 +19,13 @@ app.use(express.static(path.join(__dirname, 'public')))
   .set('view engine', 'ejs');
 
 app.get('/', async (req, res) => {
-  if (await redisClient.get("special-key") === null) {
-    await redisClient.set("special-key", "special-value");
-    res.json({ "answer": "special-key - special-value not found" });
+  if (await redisClient.get("some-key") === null) {
+    await redisClient.set("some-key", "value");
+    res.json({ "answer": "key - value not found, oh no!" });
     return;
   }
   else {
-    res.json({ "answer": "special-key - special-value found" });
+    res.json({ "answer": "key - value found, yeah baby!" });
     return;
   }
   // res.render('index');
