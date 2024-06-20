@@ -19,8 +19,8 @@ app.use(express.static(path.join(__dirname, 'public')))
   .set('view engine', 'ejs');
 
 app.get('/', async (req, res) => {
-  if (await redisClient.get("key") === null) {
-    await redisClient.set("key", "value");
+  if (await redisClient.get("special-key") === null) {
+    await redisClient.set("special-key", "special-value");
     res.json({ "answer": "key - value not found" });
     return;
   }
@@ -28,7 +28,7 @@ app.get('/', async (req, res) => {
     res.json({ "answer": "key - value found" });
     return;
   }
-  res.render('index');
+  // res.render('index');
 });
 
 app.get('/api', async (req, res) => {
