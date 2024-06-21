@@ -24,7 +24,7 @@
     };
     # Enable previews and customize configuration
     previews = {
-      enable = true;
+      enable = false;
       previews = {
         web = {
           command = ["npm" "run" "dev" "--" "--port" "$PORT"];

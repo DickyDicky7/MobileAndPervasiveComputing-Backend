@@ -2,7 +2,11 @@ import * as express from "express";
 import * as path from "path";
 import * as redis from "redis";
 
-const redisClient = redis.createClient();
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+
+const redisClient = redis.createClient({
+  url: redisUrl,
+});
 redisClient.on("connect", () => {
   console.log("Redis connected");
 });
@@ -19,15 +23,18 @@ app.use(express.static(path.join(__dirname, 'public')))
   .set('view engine', 'ejs');
 
 app.get('/', async (req, res) => {
+  // redisClient.flushAll();
   if (await redisClient.get("some-key") === null) {
     await redisClient.set("some-key", "value");
-    res.json({ "answer": "key - value not found, oh no!" });
-    return;
+    res.json({ "answer": "key - value not found, oh no!!!" });
+    // return;
   }
   else {
-    res.json({ "answer": "key - value found, yeah baby!" });
-    return;
+    res.json({ "answer": "key - value found, yeah baby!!!" });
+    // return;
   }
+  // redisClient.flushAll();
+  return;
   // res.render('index');
 });
 
