@@ -1,28 +1,20 @@
 import * as express from "express";
 import * as path from "path";
-import * as redis from "redis";
+import redisClient from "./redisClient";
+import mongoClient from "./mongoClient";
+import mongoose from "mongoose";
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-
-const redisClient = redis.createClient({
-  url: redisUrl,
-});
-redisClient.on("connect", () => {
-  console.log("Redis connected");
-});
-redisClient.on("error", (err) => {
-  console.log("Redis error:", err);
-});
 redisClient.connect();
+mongoClient.connect();
 
 const app = express();
 const port = parseInt(process.env.PORT) || process.argv[3] || 8080;
 
-app.use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, "public")))
+  .set("views", path.join(__dirname, "views"))
+  .set("view engine", "ejs");
 
-app.get('/', async (req, res) => {
+app.get("/", async (req, res) => {
   // redisClient.flushAll();
   if (await redisClient.get("some-key") === null) {
     await redisClient.set("some-key", "value");
@@ -35,10 +27,10 @@ app.get('/', async (req, res) => {
   }
   // redisClient.flushAll();
   return;
-  // res.render('index');
+  // res.render("index");
 });
 
-app.get('/api', async (req, res) => {
+app.get("/api", async (req, res) => {
   res.json({ "msg": "Hello world" });
 });
 

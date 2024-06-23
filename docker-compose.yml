@@ -7,16 +7,36 @@ services:
       - "8088:8080"
     depends_on:
       - redis
+      - mongo
     environment:
       REDIS_URL: redis://redis:6379
+      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
   redis:
     image: redis/redis-stack:7.0.6-RC9
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
+  mongo:
+    image: mongodb/mongodb-atlas-local:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - mongo-data:/data/db
 volumes:
   redis-data:
+  mongo-data:
+
+
+
+
+
+
+
+
 
 
 
