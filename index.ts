@@ -2,7 +2,7 @@ import * as express from "express";
 import * as path from "path";
 import redisClient from "./redisClient";
 import mongoClient from "./mongoClient";
-import mongoose from "mongoose";
+import User from "./mongoose_schemas/user"
 
 redisClient.connect();
 mongoClient.connect();
@@ -32,6 +32,18 @@ app.get("/", async (req, res) => {
 
 app.get("/api", async (req, res) => {
   res.json({ "msg": "Hello world" });
+});
+
+app.get("/save-user", async (req, res) => {
+  const instance = new User();
+  instance.username = "test";
+  instance.password = "test";
+  await instance.save();
+  res.json({ "msg": await User.find({}) });
+});
+
+app.get("/load-user", async (req, res) => {
+  res.json({ "msg": await User.find({}) });
 });
 
 app.listen(port, () => {
