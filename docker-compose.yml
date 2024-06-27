@@ -9,6 +9,7 @@ services:
       - redis
       - mongo
     environment:
+      JWT_SECRET_KEY: laughOutLoud
       REDIS_URL: redis://redis:6379
       MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
   redis:
@@ -26,7 +27,17 @@ services:
       - MONGODB_INITDB_ROOT_PASSWORD=pass
     volumes:
       - mongo-data:/data/db
-  
+      - mgcfg-data:/data/configdb
+  mongosh:
+    image: rtsp/mongosh:latest
+    ports:
+      - "1234:1234"
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
+
+
   server:
     build:
       context: ./pythonClient
@@ -51,8 +62,7 @@ services:
 volumes:
   redis-data:
   mongo-data:
-  server-data:
-
+  mgcfg-data:
 
 
 
