@@ -37,46 +37,23 @@ services:
     environment:
       MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
 
-
-  server:
+  pythonserver:
+    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendpythonserver:latest
     build:
       context: ./pythonClient
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
-    volumes:
-      - ./pythonClient:/usr/src/app
-      - server-data:/data/db
     depends_on:
       - redis
       - mongo
     environment:
       REDIS_URL: redis://redis:6379
       MONGO_URL: mongodb://mongo:27017/?directConnection=true
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 volumes:
   redis-data:
   mongo-data:
   mgcfg-data:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
