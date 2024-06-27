@@ -5,6 +5,7 @@ import mongoClient from "./mongoClient";
 //import User from "./mongoose_schemas/user";
 import authRoute from "./auth";
 import passport from "./passportJwt";
+
 redisClient.connect();
 mongoClient.connect();
 
@@ -17,7 +18,7 @@ app.use(express.static(path.join(__dirname, "public")))
 
 app.use(passport.initialize());
 
-app.use('/auth', authRoute);
+app.use("/auth", authRoute);
 
 app.get("/", async (req, res) => {
   // redisClient.flushAll();
@@ -39,7 +40,7 @@ app.get("/api", async (req, res) => {
   res.json({ "msg": "Hello world" });
 });
 
-app.post("/profile", passport.authenticate('jwt', {session: false}, (req, res) => {
+app.post("/profile", passport.authenticate("jwt", { session: false }, (req, res) => {
   res.send(res.user.profile);
 }))
 
