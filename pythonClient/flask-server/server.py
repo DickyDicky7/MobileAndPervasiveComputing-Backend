@@ -1,46 +1,73 @@
 from flask import Flask, request, jsonify
-from transformers import ViTFeatureExtractor, ViTForImageClassification
+from transformers import ViTImageProcessor, ViTForImageClassification
+from dotenv import load_dotenv
+import cohere
+import os
+from flask_cors import CORS, cross_origin
 from PIL import Image
 import requests
 import pytesseract
 from io import BytesIO
 
+load_dotenv()  
+
+co = cohere.Client(os.environ.get("COHERE_API_KEY"))
+
 app = Flask("Lift")  # Setting the app name to "Lift"
 
+CORS(app)
 # Setup ViT model and feature extractor
-feature_extractor = ViTFeatureExtractor.from_pretrained('google/vit-base-patch16-224')
+image_processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
 model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
 
 # Set CoHere API key
-os.environ["COHERE_API_KEY"] = 's1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t'
+# os.environ["COHERE_API_KEY"] = 's1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t'
+
+def chat_with_cohere(prompt):
+    response = co.chat(
+        message=prompt
+    )
+    return str(response.text)
 
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "UP"}), 200
 
-@app.route('/classify-image', methods=['POST'])
+@app.route('/classify-image', methods=['POST','GET'])
 def classify_image():
-    url = request.json.get('image_url')
-    response = requests.get(url)
-    image = Image.open(BytesIO(response.content))
+    # url = request.json.get('image_url')
+    url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
+    # response = requests.get(url)
+    image = Image.open(requests.get(url, stream=True).raw)
 
-    inputs = feature_extractor(images=image, return_tensors="pt")
+    inputs = image_processor(images=image, return_tensors="pt")
     outputs = model(**inputs)
 
     logits = outputs.logits
     predicted_class_idx = logits.argmax(-1).item()
     predicted_result = model.config.id2label[predicted_class_idx]
 
-    return jsonify({'predicted_class': predicted_result})
+    return ({'predicted_class': predicted_result})
+
+@app.route('/chat', methods=['POST', 'GET'])
+@cross_origin(origins='*')
+def chat():
+    prompt = request.args.get('prompt')
+    response = chat_with_cohere(prompt)
+    return str(response.text)
 
 @app.route('/recommendation', methods=['POST'])
+@cross_origin(origins='*')
 def recommendation():
-    category = request.json.get('category')
-    prompt = f"How to package {category} for logistics company?"
+# pass
+# Get the message input from the user
+    data = request.get_json()
+    category = data["category"]
+    prompt = "How to package {category} for logistics company?"
 
-    # Execute CoHere API command or any other relevant logic here
-
-    return jsonify({'recommendation': f"Recommendations for {category} packaging"})
+    # Use the API to generate a response
+    response = chat_with_cohere(prompt)
+    return str(response.text)
 
 @app.route('/extract-text-from-image', methods=['POST'])
 def extract_text_from_image():
@@ -51,4 +78,4 @@ def extract_text_from_image():
 
     return jsonify({'extracted_text': extracted_information})
 
-app.run(port=8081, debug=True)  # Run the app on port 8081 with debug mode enabled
+app.run(host='0.0.0.0', port=8081, debug=True)  # Run the app on port 8081 with debug mode enabled
