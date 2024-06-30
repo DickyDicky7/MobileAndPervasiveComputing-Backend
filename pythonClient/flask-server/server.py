@@ -35,8 +35,23 @@ def health_check():
 
 @app.route('/classify-image', methods=['POST','GET'])
 def classify_image():
-    # url = request.json.get('image_url')
-    url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
+    if request.method == 'GET':                                            
+        # return ({'response': 'Please enter your image'})
+        # 
+        url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
+        # response = requests.get(url)
+        image = Image.open(requests.get(url, stream=True).raw)
+
+        inputs = image_processor(images=image, return_tensors="pt")
+        outputs = model(**inputs)
+
+        logits = outputs.logits
+        predicted_class_idx = logits.argmax(-1).item()
+        predicted_result = model.config.id2label[predicted_class_idx]
+
+        return ({'predicted_class': predicted_result})
+    url = request.json.get('image_url')
+    # url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
     # response = requests.get(url)
     image = Image.open(requests.get(url, stream=True).raw)
 
@@ -52,25 +67,31 @@ def classify_image():
 @app.route('/chat', methods=['POST', 'GET'])
 @cross_origin(origins='*')
 def chat():
+    if request.method == 'GET':                                            
+        return ({'response': 'Please enter your question'})                             
     prompt = request.args.get('prompt')
     response = chat_with_cohere(prompt)
-    return str(response.text)
+    return ({'response': response})
 
-@app.route('/recommendation', methods=['POST'])
+@app.route('/recommendation', methods=['POST', 'GET'])
 @cross_origin(origins='*')
 def recommendation():
 # pass
 # Get the message input from the user
+    if request.method == 'GET':                                            
+        return ({'response': 'Please enter your type of package'})     
     data = request.get_json()
     category = data["category"]
     prompt = "How to package {category} for logistics company?"
 
     # Use the API to generate a response
     response = chat_with_cohere(prompt)
-    return str(response.text)
+    return ({'response': response})
 
-@app.route('/extract-text-from-image', methods=['POST'])
+@app.route('/extract-text-from-image', methods=['POST', 'GET'])
 def extract_text_from_image():
+    if request.method == 'GET':                                            
+        return ({'response': 'Please enter your image'})     
     uploaded_file = request.files['image']
     image = Image.open(uploaded_file)
 
