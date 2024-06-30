@@ -49,7 +49,7 @@ services:
       - mongo
     environment:
       REDIS_URL: redis://redis:6379
-      MONGO_URL: mongodb://mongo:27017/?directConnection=true
+      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
 
 volumes:
   redis-data:
