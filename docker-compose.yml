@@ -36,6 +36,21 @@ services:
       - mongo
     environment:
       MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
+
+  pythonserver:
+    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendpythonserver:latest
+    build:
+      context: ./pythonClient
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      REDIS_URL: redis://redis:6379
+      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
+
 volumes:
   redis-data:
   mongo-data:

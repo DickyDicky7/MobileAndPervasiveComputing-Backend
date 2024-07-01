@@ -1,0 +1,16 @@
+flask
+flask-cors
+transformers
+pillow
+requests
+pytesseract
+python-dotenv
+
+openai
+h5py
+tensorflow-cpu
+cohere
+# tesseract-ocr
+jupyterlab
+jupyter-ai
+jupyter-ai-magics
