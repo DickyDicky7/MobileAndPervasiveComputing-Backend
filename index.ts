@@ -5,6 +5,7 @@ import mongoClient from "./mongoClient";
 //import User from "./mongoose_schemas/user";
 import authRoute from "./auth";
 import passport from "./passportJwt";
+import { EnsureUserExists } from "./mongoose_schemas/user";
 
 redisClient.connect();
 mongoClient.connect();
@@ -17,6 +18,8 @@ app.use(express.static(path.join(__dirname, "public")))
   .set("view engine", "ejs");
 
 app.use(passport.initialize());
+
+app.use(EnsureUserExists);
 
 app.use("/auth", authRoute);
 
