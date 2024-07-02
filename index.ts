@@ -2,10 +2,9 @@ import * as express from "express";
 import * as path from "path";
 import redisClient from "./redisClient";
 import mongoClient from "./mongoClient";
-//import User from "./mongoose_schemas/user";
 import authRoute from "./auth";
-import passport from "./passportJwt";
-import { EnsureUserExists } from "./mongoose_schemas/user";
+import passport  from "./passportJwt";
+import { ensureUserExists } from "./mongoose_schemas/user";
 
 redisClient.connect();
 mongoClient.connect();
@@ -17,35 +16,34 @@ app.use(express.static(path.join(__dirname, "public")))
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs");
 
-app.use(passport.initialize());
+const   bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json())
 
-app.use(EnsureUserExists);
-
+app.use( passport .initialize());
+app.use( ensureUserExists );
 app.use("/auth", authRoute);
-
-app.get("/", async (req, res) => {
-  // redisClient.flushAll();
-  if (await redisClient.get("some-key") === null) {
-    await redisClient.set("some-key", "value");
-    res.json({ "answer": "key - value not found, oh no!!!" });
-    // return;
-  }
-  else {
-    res.json({ "answer": "key - value found, yeah baby!!!" });
-    // return;
-  }
-  // redisClient.flushAll();
-  return;
-  // res.render("index");
+app.use("/protected", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  passport.authenticate("jwt", { session: false }, (err, user, info, status) => {
+    if (!user || err) return res.status(403).json({ "msg": info });
+    res.locals.user = user;
+    next();
+  })(req,
+     res,
+    next) ;
 });
 
-app.get("/api", async (req, res) => {
-  res.json({ "msg": "Hello world" });
+app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.json({ "msg": "Hello 1" });
 });
 
-app.post("/profile", passport.authenticate("jwt", { session: false }, (req, res) => {
-  res.send(res.user.profile);
-}))
+app.get("/api", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.json({ "msg": "Hello 2" });
+});
+
+app.get("/protected/profile", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.json({ "msg":"Profile", "data":res.locals.user });
+});
 
 // app.get("/save-user", async (req, res) => {
 //   const instance = new User();
