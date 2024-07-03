@@ -99,4 +99,4 @@ def extract_text_from_image():
 
     return jsonify({'extracted_text': extracted_information})
 
-app.run(host='0.0.0.0', port=8081, debug=True)  # Run the app on port 8081 with debug mode enabled
+app.run(host='0.0.0.0', port=27018, debug=True)  # Run the app on port 27018 with debug mode enabled
