@@ -53,7 +53,7 @@ const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
 const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     shipmentType: { type: String, enum: ShipmentType, required: true },
     deliveryType: { type: String, enum: DeliveryType, required: true },
-    senderInfo  : { type:   senderInfo, required: true },
+      senderInfo: { type:   senderInfo, required: true },
     receiverInfo: { type: receiverInfo                 },
     weight      : { type: Number, required: true },
     status      : { type: String, required: true },
