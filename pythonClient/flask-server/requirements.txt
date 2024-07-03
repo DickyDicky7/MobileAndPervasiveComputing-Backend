@@ -15,3 +15,5 @@ cohere
 # jupyter-ai
 # jupyter-ai-magics
 pymongo
+
+

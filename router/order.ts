@@ -1,11 +1,26 @@
 import * as express from "express";
-import axios from "axios";
+import axios    from "axios";
+import mongoose from "mongoose";
 import Order, { ShipmentType, DeliveryType } from "../mongoose_schemas/order";
 
 const router = express.Router();
 
 router.post("/confirmation", async (req: express.Request, res: express.Response, next: express.RequestHandler) =>{
-    const {shipmentType, deliveryType, senderInfo, receiverInfo, pickupDate, pickupTime, message, inProgress} = req.body;
+    const { shipmentType,
+            deliveryType,
+              senderInfo,
+            receiverInfo,
+            packageSize,
+            weight,
+            status,
+            pickupDate,
+            pickupTime,
+            value,
+            hubId,
+            deliveryAddress,
+                    message,
+            inProgress,
+        } = req.body;
     if (!Object.values(ShipmentType).includes(shipmentType)){
         return res.status(400).json({"msg": "Shipment type not found"});
     }
@@ -16,11 +31,17 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
         const newOrder = new Order({
             shipmentType: shipmentType,
             deliveryType: deliveryType,
-            senderInfo  :   senderInfo,
+              senderInfo:   senderInfo,
             receiverInfo: receiverInfo,
+            weight      : weight,
+            status      : status,
+            packageSize : packageSize,
             pickupDate  : pickupDate,
             pickupTime  : pickupTime,
-            message: message,
+            value: value,
+            hubId: new mongoose.Types.ObjectId(hubId),
+            deliveryAddress: deliveryAddress,
+                    message:         message,
             inProgress: inProgress,
         })
         await newOrder.save();
