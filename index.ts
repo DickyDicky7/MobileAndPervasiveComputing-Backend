@@ -59,6 +59,7 @@ app.get("/protected/profile", async (req: express.Request, res: express.Response
 // app.get("/load-user", async (req, res) => {
 //   res.json({ "msg": await User.find({}) });
 // });
+
 import axios from "axios";
 app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const response = await axios.get("http://pythonserver:27018/health");
@@ -72,9 +73,7 @@ app.get ("/classify-image", async (req: express.Request, res: express.Response, 
 
 app.post("/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const response = await axios.post("http://pythonserver:27018/classify-image", {
-    data: {
-      image_url:req.body.image_url
-    }
+    image_url : req.body.image_url
   });
   res.json(response.data);
 });
@@ -89,6 +88,32 @@ app.post("/chat", async (req: express.Request, res: express.Response, next: expr
   res.json(response.data);
 });
 
+app.get ("/recommendation", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.get ("http://pythonserver:27018/recommendation");
+  res.json(response.data);
+});
+
+app.post("/recommendation", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.post("http://pythonserver:27018/recommendation", {
+    category  : req.body.category
+  });
+  res.json(response.data);
+});
+
+app.get ("/extract-text-from-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.get ("http://pythonserver:27018/extract-text-from-image");
+  res.json(response.data);
+});
+
+app.post("/extract-text-from-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.post("http://pythonserver:27018/extract-text-from-image", {
+    image_url : req.body.image_url
+  });
+  res.json(response.data);
+});
+
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);
 });
+
+
