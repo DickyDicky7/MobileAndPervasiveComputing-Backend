@@ -1,38 +1,63 @@
-import mongoose from "mongoose";
-import * as bcrypt from "bcryptjs";
+import mongoose from "mongoose"; import * as express from "express"; import * as bcrypt from "bcryptjs";
 
 export enum UserRole {
-    Sender = "sender",
+      Sender =   "sender",
     Receiver = "receiver",
-    Shipper = "shipper",
-    Coordinator = "coordinator"
+    Shipper  = "shipper",
+    Coordinator = "coordinator",
 }
 
 export interface IUser extends mongoose.Document {
     username: string;
     password: string;
-    email: string;
     role: UserRole;
     ComparePassword(password: string): Promise<boolean>;
 }
 
 const user: mongoose.Schema<IUser> = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: UserRole, required: true },
+    username: { type: String, required: true, index: true, unique: true },
+    password: { type: String, required: true,                           },
+    role: { type: String, enum: UserRole,  required: true               },
 });
 
 user.pre<IUser>("save", async function (next) {
-    if (this.isModified("password") || this.isNew) {
+    if (this.isModified("password")
+    ||  this.isNew) {
         this.password = await bcrypt.hash(this.password, 10);
     }
     next();
 });
 
-user.methods.ComparePassword = function (password: string): boolean {
-    return password == this.password;
+user.methods.ComparePassword =function (password: string): Promise<boolean> {
+    return bcrypt.compare(password,this.password);
 };
+
+export const ensureUserExists: express.RequestHandler = async(req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const roles = Object.values(UserRole);
+    const promises = (Array.from({length: 10}, (_, index) => index + 1)).map(async (index) => {
+        for (var role of roles) {
+            const newUsername = `${role}_username_${index}`;
+            const newPassword = `${role}_password_${index}`;
+            if (!(await User.exists({ username: newUsername }))) {
+                const newUser = new User({
+                    username: newUsername,
+                    password: newPassword,
+                    role: role
+                })
+                await newUser.save();
+                console.log("YES");
+            }
+        }
+    });
+    await Promise.all(promises);
+    next();
+}
 
 const User = mongoose.model("User", user);
 
 export default User;
+
+export
+type          TUser = mongoose.Document<unknown, {}, IUser> & IUser & Required<{
+    _id: unknown;
+}>;
