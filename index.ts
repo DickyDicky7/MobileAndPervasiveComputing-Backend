@@ -10,7 +10,7 @@ redisClient.connect();
 mongoClient.connect();
 
 const app = express();
-const port = parseInt(process.env.PORT) || process.argv[3] || 8080;
+const port = parseInt(process.env.PORT) || process.argv[3] || 8088;
 
 app.use(express.static(path.join(__dirname, "public")))
   .set("views", path.join(__dirname, "views"))
@@ -56,6 +56,35 @@ app.get("/protected/profile", async (req: express.Request, res: express.Response
 // app.get("/load-user", async (req, res) => {
 //   res.json({ "msg": await User.find({}) });
 // });
+import axios from "axios";
+app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.get("http://pythonserver:27018/health");
+  res.json(response.data);
+});
+
+app.get ("/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.get ("http://pythonserver:27018/classify-image");
+  res.json(response.data);
+});
+
+app.post("/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.post("http://pythonserver:27018/classify-image", {
+    data: {
+      image_url:req.body.image_url
+    }
+  });
+  res.json(response.data);
+});
+
+app.get ("/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.get ("http://pythonserver:27018/chat");
+  res.json(response.data);
+});
+
+app.post("/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.post(`http://pythonserver:27018/chat?prompt=${req.query.prompt}`);
+  res.json(response.data);
+});
 
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);
