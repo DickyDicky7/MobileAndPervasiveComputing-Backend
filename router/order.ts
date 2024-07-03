@@ -4,10 +4,10 @@ import Order, { ShipmentType, DeliveryType } from "../mongoose_schemas/order";
 
 const router = express.Router();
 
-router.post("/confirmation", async (req: express.Request, res: express.Response, next: express.RequestHandler) => {
-    const { shipmentType, deliveryType, senderInfo, receiverInfo, pickupDate, pickupTime } = req.body;
-    if (!Object.values(ShipmentType).includes(shipmentType)) {
-        return res.status(400).json({ "msg": "Shipment type not found" });
+router.post("/confirmation", async (req: express.Request, res: express.Response, next: express.RequestHandler) =>{
+    const {shipmentType, deliveryType, senderInfo, receiverInfo, pickupDate, pickupTime, message, inProgress} = req.body;
+    if (!Object.values(ShipmentType).includes(shipmentType)){
+        return res.status(400).json({"msg": "Shipment type not found"});
     }
     if (!Object.values(DeliveryType).includes(deliveryType)) {
         return res.status(400).json({ "msg": "Delivery type not found" });
@@ -20,6 +20,8 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
             receiverInfo: receiverInfo,
             pickupDate  : pickupDate,
             pickupTime  : pickupTime,
+            message: message,
+            inProgress: inProgress,
         })
         await newOrder.save();
         return res.status(201).json({ "msg": "Order confirmed!" });

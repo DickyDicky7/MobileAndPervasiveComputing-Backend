@@ -36,6 +36,8 @@ export interface IOrder extends mongoose.Document {
     value       : number,
     hubId       :  mongoose.Types.ObjectId,
     deliveryAddress: string,
+            message: string,
+    inProgress: boolean,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
@@ -60,7 +62,9 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     pickupTime  : { type: String, required: true, match: /^([01]\d|2[0-3]):([0-5]\d)$/ },
     value       : { type: Number, required: true },
     hubId       : { type: mongoose.Schema.Types.ObjectId, required: true },
-    deliveryAddress: {type: String},
+    deliveryAddress: { type: String, required: true },
+            message: { type: String, required: true },
+    inProgress: { type: Boolean, required: true },
 });
 
 const Order = mongoose.model("Order", order);
