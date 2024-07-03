@@ -2,7 +2,8 @@ import * as express from "express";
 import * as path from "path";
 import redisClient from "./redisClient";
 import mongoClient from "./mongoClient";
-import authRoute from "./auth";
+import authRoute from "./router/auth";
+import orderRoute from "./router/order";
 import passport  from "./passportJwt";
 import { ensureUserExists } from "./mongoose_schemas/user";
 
@@ -32,6 +33,7 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
      res,
     next) ;
 });
+app.use("/order", orderRoute);
 
 app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.json({ "msg": "Hello 1" });

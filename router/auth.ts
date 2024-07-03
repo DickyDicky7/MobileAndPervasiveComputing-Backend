@@ -1,5 +1,5 @@
 import * as express from "express"     ;
-import * as jwt     from "jsonwebtoken"; import User, { UserRole, TUser } from "./mongoose_schemas/user";
+import * as jwt     from "jsonwebtoken"; import User, { UserRole, TUser } from "../mongoose_schemas/user";
 import * as  bcrypt from     "bcryptjs";
 
 const router = express.Router();
