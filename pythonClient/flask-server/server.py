@@ -7,4 +7,4 @@ app.register_blueprint(ai_bp)
 app.register_blueprint(arrange_bp)
 
 if __name__ == "__main__":
-    app.run(port=8081)
+    app.run(port=27018)
