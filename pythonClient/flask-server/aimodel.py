@@ -92,8 +92,13 @@ def recommendation():
 def extract_text_from_image():
     if request.method == 'GET':                                            
         return ({'response': 'Please enter your image'})     
-    uploaded_file = request.files['image']
-    image = Image.open(uploaded_file)
+    # uploaded_file = request.files['image']
+    # image = Image.open(uploaded_file)
+
+## TUAN ANH FIX CHO NAY (
+    url = request.json.get('image_url')
+    image = Image.open(requests.get(url, stream=True).raw)
+## TUAN ANH FIX CHO NAY )
 
     extracted_information = pytesseract.image_to_string(image)
 

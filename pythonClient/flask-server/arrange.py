@@ -1,19 +1,21 @@
-from flask import Flask, request, jsonify, Blueprint
-from pymongo import MongoClient
-from bson.objectid import ObjectId
-from bson import json_util
+from flask import Flask, request, jsonify, Blueprint # type: ignore
+from pymongo import MongoClient # type: ignore
+from bson.objectid import ObjectId # type: ignore
+from bson import json_util # type: ignore
 import json
+import os
 
 arrange_bp = Blueprint("arrange",__name__)
 
 # Connect to MongoDB
-client = MongoClient('mongodb+srv://root:123@cluster0.ppxonhm.mongodb.net/?retryWrites=true&w=majority&appName=lift')
+client = MongoClient(os.environ.get("MONGO_DB"))
 db = client.lift
 
 # Collections
 hubs = db.hubs
 orders = db.orders
 staff = db.staff
+delivery = db.deliveries
 
 # Sample data
 sample_hubs = [
@@ -181,12 +183,15 @@ def assign_delivery_task():
                     (member['age'] > 30 and order['value'] <= 1000000))):
                 assignments.append({
                     'order_id': order['_id'],
-                    'staff_id': member['_id']
+                    'staff_id': member['_id'],
+                    'delivery_id': order['hub_id']
                 })
                 orders.update_one({'_id': order['_id']}, {'$set': {'status': 'assigned'}})
                 break
 
     return parse_json(assignments), 200
+
+
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
