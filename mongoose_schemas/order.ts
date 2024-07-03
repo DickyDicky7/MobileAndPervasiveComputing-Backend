@@ -31,6 +31,8 @@ export interface IOrder extends mongoose.Document{
     packageSize: number,
     pickupDate: Date,
     pickupTime: string,
+    message: string,
+    inProgress: boolean,
 }
 //schema
 const senderInfo: mongoose.Schema<ISenderInfo> = new mongoose.Schema({
@@ -51,6 +53,8 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     packageSize: {type: Number, required: true},
     pickupDate: {type: Date, required: true},
     pickupTime: {type: String, required: true, match: /^([01]\d|2[0-3]):([0-5]\d)$/ },
+    message: {type: String},
+    inProgress: {type: Boolean},
 });
 
 const Order = mongoose.model("Order", order);
