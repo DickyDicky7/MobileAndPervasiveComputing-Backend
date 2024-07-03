@@ -1,4 +1,5 @@
 import * as express from "express";
+import axios from "axios";
 import Order, { ShipmentType, DeliveryType } from "../mongoose_schemas/order";
 
 const router = express.Router();
@@ -28,4 +29,31 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
     }
 });
 
+router.get   ("/orders", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response = await axios.get   ("http://pythonserver:27018/orders");
+    res.json(response.data);
+});
+
+router.get   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response = await axios.get   (`http://pythonserver:27018/order?id=${req.query.id}`);
+    res.json(response.data);
+});
+
+router.post  ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response = await axios.post  ("http://pythonserver:27018/order"                  , req.body);
+    res.json(response.data);
+});
+
+router.put   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response = await axios.put   (`http://pythonserver:27018/order?id=${req.query.id}`, req.body);
+    res.json(response.data);
+});
+
+router.delete("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response = await axios.delete(`http://pythonserver:27018/order?id=${req.query.id}`);
+    res.json(response.data);
+});
+
 export default router;
+
+
