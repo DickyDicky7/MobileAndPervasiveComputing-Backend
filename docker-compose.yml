@@ -1,13 +1,14 @@
 version: '3.8'
 services:
   nodejsserver:
-    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendnodejserver:latest
+    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendnodejsserver:latest
     build: .
     ports:
-      - "8088:8080"
+      - "8088:8088"
     depends_on:
       - redis
       - mongo
+      - pythonserver
     environment:
       JWT_SECRET_KEY: LaughOutLoud
       REDIS_URL: redis://redis:6379
@@ -28,14 +29,6 @@ services:
     volumes:
       - mongo-data:/data/db
       - mgcfg-data:/data/configdb
-  mongosh:
-    image: rtsp/mongosh:latest
-    ports:
-      - "1234:1234"
-    depends_on:
-      - mongo
-    environment:
-      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
 
   pythonserver:
     image: rnseminarcnpm.azurecr.io/seminarcnpmbackendpythonserver:latest
@@ -43,7 +36,7 @@ services:
       context: ./pythonClient
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - "27018:27018"
     depends_on:
       - redis
       - mongo
