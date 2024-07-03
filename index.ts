@@ -28,13 +28,13 @@ app.use(bodyParser.json())
 app.use( passport .initialize());
 app.use( ensureUserExists );
 var hasInit = false;
-app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!hasInit) {
-    await axios.get("http://pythonserver:27018/init");
-    hasInit = true;
-  }
-  next();
-});
+// app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   if (!hasInit) {
+//     await axios.get("http://pythonserver:27018/init");
+//     hasInit = true;
+//   }
+//   next();
+// });
 app.use("/auth", authRoute);
 app.use("/protected", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate("jwt", { session: false }, (err, user, info, status) => {
@@ -129,5 +129,31 @@ app.get("/health", async (req: express.Request, res: express.Response, next: exp
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);
 });
+
+import mongoose from "mongoose";
+app.get("/nuke", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    // throw new Error("test");
+    await Promise.all(Object.values(mongoose.connection.collections).map((collection) =>
+       collection.deleteMany({})
+    ));
+    res.status(200).json({ "msg": "ok" });
+  } catch (err) {
+    res.status(500).json({ "msg": err, });
+  }
+});
+
+// app.use(async (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   console.log (err);
+// res.status(500).json({ "msg": err });
+// });
+
+
+
+
+
+
+
+
 
 

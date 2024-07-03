@@ -54,7 +54,7 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     shipmentType: { type: String, enum: ShipmentType, required: true },
     deliveryType: { type: String, enum: DeliveryType, required: true },
       senderInfo: { type:   senderInfo, required: true },
-    receiverInfo: { type: receiverInfo                 },
+    receiverInfo: { type: receiverInfo, required: true },
     weight      : { type: Number, required: true },
     status      : { type: String, required: true },
     packageSize : { type: Number, required: true },
