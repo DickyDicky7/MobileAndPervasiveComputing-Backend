@@ -148,6 +148,96 @@ app.get("/nuke", async (req: express.Request, res: express.Response, next: expre
 // res.status(500).json({ "msg": err });
 // });
 
+import Staff from "./mongoose_schemas/staff";
+import Hub   from "./mongoose_schemas/hub"  ;
+import Order from "./mongoose_schemas/order";
+import User from "./mongoose_schemas/user";
+app.get("/init", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const shipper1 = await User.findOne({ username: "shipper_username_1" });
+  const shipper2 = await User.findOne({ username: "shipper_username_2" });
+  const hub1 = new Hub({
+    name: "Hub 1",
+    district: "District 1",
+  });
+  const hub2 = new Hub({
+    name: "Hub 2",
+    district: "District 2",
+  });
+  await hub1.save();
+  await hub2.save();
+  const order1 = new Order({
+    shipmentType:  "Package",
+    deliveryType: "Standard",
+      senderInfo: { name: "", address: "", phoneNumber: 0 },
+    receiverInfo: { name: "", address: "", phoneNumber: 0 },
+    weight      : 50,
+    status      : "pending",
+    packageSize : 50,
+    pickupDate  : "",
+    pickupTime  : "",
+    value       :  1200000 ,
+    hubId       : hub1._id ,
+    deliveryAddress: "123 Vo Thi Sau, District 1, HCM City",
+            message: ""                                    ,
+    inProgress: false,
+
+  });
+  const order2 = new Order({
+    shipmentType:  "Package",
+    deliveryType: "Standard",
+      senderInfo: { name: "", address: "", phoneNumber: 0 },
+    receiverInfo: { name: "", address: "", phoneNumber: 0 },
+    weight      : 30,
+    status      : "pending",
+    packageSize : 30,
+    pickupDate  : "",
+    pickupTime  : "",
+    value       :  800000  ,
+    hubId       : hub2._id ,
+    deliveryAddress: "456 Nguyen Trai, District 2, HCM City",
+            message: ""                                     ,
+    inProgress: false,
+
+  });
+  await order1.save();
+  await order2.save();
+  const staff1 = new Staff({
+    name  : "John Doeee",
+    age   : 25    ,
+    gender: "male",
+    weight: 70    ,
+    motorcycleCapacity: 150,
+     hubId:     hub1._id,
+    userId: shipper1._id,
+  });
+  const staff2 = new Staff({
+    name   : "Jane Smith",
+    age   : 30      ,
+    gender: "female",
+    weight: 60      ,
+    motorcycleCapacity: 100,
+     hubId:     hub2._id,
+    userId: shipper2._id,
+  });
+  await staff1.save();
+  await staff2.save();
+  res.status(200).json({
+    "initData": [
+      hub1,
+      hub2,
+      order1,
+      order2,
+      staff1,
+      staff2,
+    ]
+  });
+});
+
+
+
+
+
+
 
 
 
