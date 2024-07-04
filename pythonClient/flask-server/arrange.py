@@ -19,8 +19,8 @@ db = client.lift
 # Collections
 hubs = db.hubs
 orders = db.orders
-staff = db.staff
-delivery = db.deliveries
+staffs = db.staff
+deliveries = db.deliveries
 
 # Sample data
 sample_hubs = [
@@ -33,7 +33,7 @@ sample_orders = [
     {"_id": ObjectId("66851e166a086a68a695c188"), "value": 800000, "weight": 30, "hubId": ObjectId("66851d686a086a68a695c187"), "status": "pending", "deliveryAddress": "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam"}
 ]
 
-sample_staff = [
+sample_staffs = [
     {"_id": ObjectId("66851d316a086a68a695c185"), "name": "John Doe", "age": 25, "gender": "male", "weight": 70, "motorcycleCapacity": 150, "hubId": ObjectId("66851d686a086a68a695c186")},
     {"_id": ObjectId("66851d316a086a68a695c186"), "name": "Jane Smith", "age": 30, "gender": "female", "weight": 60, "motorcycleCapacity": 100, "hubId": ObjectId("66851d686a086a68a695c187")}
 ]
@@ -48,7 +48,7 @@ def insert_sample_data():
     orders.insert_many(sample_orders)
     
     # Insert staff
-    staff.insert_many(sample_staff)
+    staffs.insert_many(sample_staffs)
 
     return("Sample data inserted successfully.")
 
@@ -161,20 +161,20 @@ def get_hub():
 def create_hub():
     data = request.json
     result = hubs.insert_one(data)
-    return parse_json({'insertedId': result.insertedId}), 201
+    return parse_json({'insertedId': result.inserted_id}), 201
 
 @arrange_bp.route('/hub', methods=['PUT'])
 def update_hub():
     hubId = request.args.get('id')
     data = request.json
     result = hubs.update_one({'_id': ObjectId(hubId)}, {'$set': data})
-    return parse_json({'matchedCount': result.matchedCount, 'modifiedCount': result.modifiedCount}), 200
+    return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @arrange_bp.route('/hub', methods=['DELETE'])
 def delete_hub():
     hubId = request.args.get('id')
     result = hubs.delete_one({'_id': ObjectId(hubId)})
-    return parse_json({'deletedCount': result.deletedCount}), 200
+    return parse_json({'deleted_count': result.deleted_count}), 200
 
 # Get the nearest hub by current address
 
@@ -219,53 +219,53 @@ def create_order():
     data = request.json
     data['hubId'] = ObjectId(data['hubId'])
     result = orders.insert_one(data)
-    return parse_json({'insertedId': result.insertedId}), 201
+    return parse_json({'insertedId': result.inserted_id}), 201
 
 @arrange_bp.route('/order', methods=['PUT'])
 def update_order():
     orderId = request.args.get('id')
     data = request.json
     result = orders.update_one({'_id': ObjectId(orderId)}, {'$set': data})
-    return parse_json({'matchedCount': result.matchedCount, 'modifiedCount': result.modifiedCount}), 200
+    return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @arrange_bp.route('/order', methods=['DELETE'])
 def delete_order():
     orderId = request.args.get('id')
     result = orders.delete_one({'_id': ObjectId(orderId)})
-    return parse_json({'deletedCount': result.deletedCount}), 200
+    return parse_json({'deleted_count': result.deleted_count}), 200
 
 # Staff Endpoints
 
 @arrange_bp.route('/staffs', methods=['GET'])
 def get_all_staff():
-    all_staff = staff.find()
+    all_staff = staffs.find()
     return parse_json(all_staff), 200
 
 @arrange_bp.route('/staff', methods=['GET'])
 def get_staff():
     staffId = request.args.get('id')
-    staff_member = staff.find_one({'_id': ObjectId(staffId)})
+    staff_member = staffs.find_one({'_id': ObjectId(staffId)})
     return parse_json(staff_member), 200
 
 @arrange_bp.route('/staff', methods=['POST'])
 def create_staff():
     data = request.json
     data['hubId'] = ObjectId(data['hubId'])
-    result = staff.insert_one(data)
-    return parse_json({'insertedId': result.insertedId}), 201
+    result = staffs.insert_one(data)
+    return parse_json({'insertedId': result.inserted_id}), 201
 
 @arrange_bp.route('/staff', methods=['PUT'])
 def update_staff():
     staffId = request.args.get('id')
     data = request.json
-    result = staff.update_one({'_id': ObjectId(staffId)}, {'$set': data})
-    return parse_json({'matchedCount': result.matchedCount, 'modifiedCount': result.modifiedCount}), 200
+    result = staffs.update_one({'_id': ObjectId(staffId)}, {'$set': data})
+    return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @arrange_bp.route('/staff', methods=['DELETE'])
 def delete_staff():
     staffId = request.args.get('id')
-    result = staff.delete_one({'_id': ObjectId(staffId)})
-    return parse_json({'deletedCount': result.deletedCount}), 200
+    result = staffs.delete_one({'_id': ObjectId(staffId)})
+    return parse_json({'deleted_count': result.deleted_count}), 200
 
 # Assign endpoints
 
@@ -274,7 +274,7 @@ def assign_delivery_tasks():
     hub_id = request.json['hubId']
     hub = hubs.find_one({'_id': ObjectId(hub_id)})
     orders_pending = list(orders.find({'hubId': ObjectId(hub_id), 'status': 'pending'}))
-    staff_members = list(staff.find({'hubId': ObjectId(hub_id)}))
+    staff_members = list(staffs.find({'hubId': ObjectId(hub_id)}))
 
     if not hub or not orders_pending or not staff_members:
         return jsonify({'error': 'Invalid data'}), 400
@@ -297,31 +297,33 @@ def assign_delivery_tasks():
                 'deliverTimes': 0,
                 'status': 'pending'
             }
-            delivery.insert_one(assignment)
+            deliveries.insert_one(assignment)
             assignments.append(assignment)
 
             orders.update_one({'_id': order['_id']}, {'$set': {'status': 'delivering'}})
 
     return jsonify(parse_json(assignments)), 200
 
-@arrange_bp.route('/transfer/update_status', methods=['POST'])
-def update_transfer_status():
-    transfer_id = request.json['transferId']
-    status = request.json['status']
-    transfer = delivery.find_one({'_id': ObjectId(transfer_id)})
+# Update status of order, max 3 times failed
 
-    if not transfer:
-        return jsonify({'error': 'Transfer not found'}), 400
+@arrange_bp.route('/delivery/update_status', methods=['POST'])
+def update_delivery_status():
+    delivery_id = request.json['deliveryId']
+    status = request.json['status']
+    delivery = deliveries.find_one({'_id': ObjectId(delivery_id)})
+
+    if not delivery:
+        return jsonify({'error': 'delivery not found'}), 400
 
     if status == 'success':
-        delivery.update_one({'_id': ObjectId(transfer_id)}, {'$set': {'status': 'success'}})
-        orders.update_one({'_id': ObjectId(transfer['orderId'])}, {'$set': {'status': 'delivered'}})
+        deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'success'}})
+        orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'delivered'}})
     elif status == 'failed':
-        deliver_times = transfer.get('deliverTimes', 0) + 1
+        deliver_times = delivery.get('deliverTimes', 0) + 1
         if deliver_times >= 3:
-            delivery.update_one({'_id': ObjectId(transfer_id)}, {'$set': {'status': 'failed'}})
-            orders.update_one({'_id': ObjectId(transfer['orderId'])}, {'$set': {'status': 'failed'}})
+            deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'failed'}})
+            orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'failed'}})
         else:
-            delivery.update_one({'_id': ObjectId(transfer_id)}, {'$set': {'deliverTimes': deliver_times}})
+            deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'deliverTimes': deliver_times}})
 
-    return jsonify({'status': 'updated'}), 200
+    return jsonify({'status': 'updated', 'deliverTimes': deliver_times}), 200
