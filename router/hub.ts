@@ -28,4 +28,9 @@ router.delete("/hub", async (req: express.Request, res: express.Response, next: 
     res.json(response.data);
 });
 
+router.get("/hub/near", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response = await axios.delete(`http://pythonserver:27018/hub/near?address=${req.query.address}`);
+    res.json(response.data);
+});
+
 export default router;
