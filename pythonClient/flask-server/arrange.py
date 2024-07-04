@@ -109,7 +109,7 @@ def create_data_model(orders, staff, hub):
     for loc1 in all_locations:
         distances = []
         for loc2 in all_locations:
-            distances.append(calculate_distance(float(loc1[0]), float(loc1[1]), float(loc2[0]), float(loc2[1]))) # lat = 0, lon = 1
+            distances.append(calculate_distance(float(loc1[0]), float(loc1[1]), float(loc2[0]), float(loc2[1]))) # lat = 0, lon  =1
         data['distance_matrix'].append(distances)
     data['num_vehicles'] = len(staff)
     data['depot'] = 0
@@ -183,10 +183,10 @@ def get_nearest_hub():
 
     address = request.args.get('address')
     address_lat, address_lon = geocode_address(address)
-    print(address_lat, address_lon)
 
     distances = []
     allHubs = hubs.find()
+    minHub = allHubs[0]
     minAddress = allHubs[0]["address"]
     minHub_lat, minHub_lon = geocode_address(minAddress)
     minDistance = calculate_distance(float(address_lat), float(address_lon), float(minHub_lat), float(minHub_lon))
@@ -197,9 +197,9 @@ def get_nearest_hub():
         distances.append(distance)
         if(minDistance > distance):
             minDistance = distance
-            minAddress = ihub['address']
+            minHub = ihub
 
-    return parse_json(minAddress), 200
+    return parse_json(minHub), 200
 
 # Orders Endpoints
 
