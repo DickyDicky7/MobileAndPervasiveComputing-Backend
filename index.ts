@@ -8,6 +8,8 @@ import orderRoute from "./router/order";
 import   hubRoute from "./router/hub"  ;
 import   a_iRoute from "./router/a.i"  ;
 import staffRoute from "./router/staff";
+import   assignRoute from "./router/assign"  ;
+import deliveryRoute from "./router/delivery";
 import passport  from "./passportJwt";
 import { ensureUserExists } from "./mongoose_schemas/user";
 
@@ -49,6 +51,8 @@ app.use("/protected", orderRoute);
 app.use("/protected",   hubRoute);
 app.use("/protected",   a_iRoute);
 app.use("/protected", staffRoute);
+app.use("/protected",   assignRoute);
+app.use("/protected", deliveryRoute);
 
 app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.json({ "msg": "Hello 1" });
@@ -233,7 +237,10 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   });
 });
 
-
+app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const response = await axios.get("http://pythonserver:27018/checkgeo");
+  res.json(response.data);
+})
 
 
 
