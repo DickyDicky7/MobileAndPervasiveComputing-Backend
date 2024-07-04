@@ -27,6 +27,9 @@ const   bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 
+const       morgan = require(     "morgan");
+app.use(    morgan("tiny"));
+
 app.use( passport .initialize());
 app.use( ensureUserExists );
 var hasInit = false;
@@ -172,34 +175,34 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const order1 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "", address: "", phoneNumber: 0 },
-    receiverInfo: { name: "", address: "", phoneNumber: 0 },
+      senderInfo: { name: "-", address: "-", phoneNumber: 0 },
+    receiverInfo: { name: "-", address: "-", phoneNumber: 0 },
     weight      : 50,
     status      : "pending",
     packageSize : 50,
-    pickupDate  : "",
-    pickupTime  : "",
+    pickupDate  : "2024-01-01",
+    pickupTime  : "12:30",
     value       :  1200000 ,
     hubId       : hub1._id ,
     deliveryAddress: "123 Vo Thi Sau, District 1, HCM City",
-            message: ""                                    ,
+            message: "-"                                    ,
     inProgress: false,
 
   });
   const order2 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "", address: "", phoneNumber: 0 },
-    receiverInfo: { name: "", address: "", phoneNumber: 0 },
+      senderInfo: { name: "-", address: "-", phoneNumber: 0 },
+    receiverInfo: { name: "-", address: "-", phoneNumber: 0 },
     weight      : 30,
     status      : "pending",
     packageSize : 30,
-    pickupDate  : "",
-    pickupTime  : "",
+    pickupDate  : "2024-01-01",
+    pickupTime  : "12:30",
     value       :  800000  ,
     hubId       : hub2._id ,
     deliveryAddress: "456 Nguyen Trai, District 2, HCM City",
-            message: ""                                     ,
+            message: "-"                                     ,
     inProgress: false,
 
   });
@@ -237,10 +240,11 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   });
 });
 
-app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const response = await axios.get("http://pythonserver:27018/checkgeo");
-  res.json(response.data);
-})
+// app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   const response = await axios.get("http://pythonserver:27018/checkgeo");
+//   console.log(response.data)
+//   res.json({});
+// })
 
 
 
