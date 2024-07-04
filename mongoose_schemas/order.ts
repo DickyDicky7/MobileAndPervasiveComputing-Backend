@@ -13,7 +13,7 @@ export enum DeliveryType {
     SameDay  = "SameDay" ,
 }
 //component interface
-interface ISenderInfo {
+interface   ISenderInfo {
     name       : string,
     address    : string,
     phoneNumber: number,
@@ -26,11 +26,18 @@ interface IReceiverInfo {
 export interface IOrder extends mongoose.Document {
     shipmentType: ShipmentType,
     deliveryType: DeliveryType,
-    senderInfo  :   ISenderInfo,
+      senderInfo:   ISenderInfo,
     receiverInfo: IReceiverInfo,
+    weight      : number,
+    status      : string,
     packageSize : number,
-    pickupDate  : Date  ,
+    pickupDate  : string,
     pickupTime  : string,
+    value       : number,
+    hubId       :  mongoose.Types.ObjectId,
+    deliveryAddress: string,
+            message: string,
+    inProgress: boolean,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
@@ -46,11 +53,18 @@ const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
 const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     shipmentType: { type: String, enum: ShipmentType, required: true },
     deliveryType: { type: String, enum: DeliveryType, required: true },
-    senderInfo  : { type:   senderInfo, required: true },
-    receiverInfo: { type: receiverInfo                 },
+      senderInfo: { type:   senderInfo, required: true },
+    receiverInfo: { type: receiverInfo, required: true },
+    weight      : { type: Number, required: true },
+    status      : { type: String, required: true },
     packageSize : { type: Number, required: true },
-    pickupDate  : { type: Date  , required: true },
+    pickupDate  : { type: String, required: true, match: /^\d{4}-\d{2}-\d{2}$/ },
     pickupTime  : { type: String, required: true, match: /^([01]\d|2[0-3]):([0-5]\d)$/ },
+    value       : { type: Number, required: true },
+    hubId       : { type: mongoose.Schema.Types.ObjectId, required: true },
+    deliveryAddress: { type: String, required: true },
+            message: { type: String, required: true },
+    inProgress: { type: Boolean, required: true },
 });
 
 const Order = mongoose.model("Order", order);

@@ -16,3 +16,4 @@ jupyter-ai
 jupyter-ai-magics
 pymongo
 ortools
+
