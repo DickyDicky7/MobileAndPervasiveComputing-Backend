@@ -74,20 +74,20 @@ def parse_json(data):
     return data
 
 def geocode_address(address):
-    # url = f'https://geocode.maps.co/search?q='+address+'&api_key='+maps_key
+    url = f'https://geocode.maps.co/search?q='+address+'&api_key='+maps_key
     response = requests.get(url)
     if response.status_code == 200:
-        result = parse_json(response)
+        # return response.json()
+        result = parse_json(response.json())
         if result:
             location = result[0]
-            print("hi")
             return parse_json({"lat": location['lat'], "lon" : location['lon']})
     return parse_json({"response": 'none'})
 
-@arrange_bp.route('/checkgeocode', methods = ["GET"])
+@arrange_bp.route('/checkgeo', methods=['GET'])
 def check():
-    response= geocode_address("1600 Amphitheatre Parkway, Mountain View, CA")
-    return parse_json(response)
+    response = geocode_address("1600 Amphitheatre Parkway, Mountain View, CA")
+    return ({'response': response})
 
 # Helper function to calculate distance between two locations (latitude, longitude)
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -106,7 +106,7 @@ def create_data_model(orders, staff, hub):
     data = {}
     hub_lat, hub_lng = geocode_address(hub['address'])
     data['distance_matrix'] = []
-    all_locations = [(hub_lat, hub_lng)] + [geocode_address(order['delivery_address']) for order in orders]
+    all_locations = [(hub_lat, hub_lng)] + [geocode_address(order['deliveryAddress']) for order in orders]
     for loc1 in all_locations:
         distances = []
         for loc2 in all_locations:
