@@ -91,7 +91,6 @@ def check():
 
 # Helper function to calculate distance between two locations (latitude, longitude)
 def calculate_distance(lat1, lon1, lat2, lon2):
-    # This function calculates the Haversine distance between two points on the Earth
     from math import radians, cos, sin, asin, sqrt
     R = 6371  # Radius of the earth in km
     dlat = radians(lat2 - lat1)
@@ -105,25 +104,25 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def create_data_model(orders, staff, hub):
     data = {}
     hub_lat, hub_lon = geocode_address(hub['address'])
-    data['distanceMatrix'] = []
+    data['distance_matrix'] = []
     all_locations = [(hub_lat, hub_lon)] + [geocode_address(order['deliveryAddress']) for order in orders]
     for loc1 in all_locations:
         distances = []
         for loc2 in all_locations:
-            distances.append(calculate_distance(loc1['lat'], loc1['lon'], loc2['lat'], loc2['lon']))
-        data['distanceMatrix'].append(distances)
-    data['numVehicles'] = len(staff)
+            distances.append(calculate_distance((loc1['lat']), (loc1['lon']), (loc2['lat']), (loc2['lon'])))
+        data['distance_matrix'].append(distances)
+    data['num_vehicles'] = len(staff)
     data['depot'] = 0
     return data
 
 def solve_vrp(data):
-    manager = pywrapcp.RoutingIndexManager(len(data['distanceMatrix']), data['numVehicles'], data['depot'])
+    manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']), data['num_vehicles'], data['depot'])
     routing = pywrapcp.RoutingModel(manager)
 
     def distance_callback(from_index, to_index):
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
-        return data['distanceMatrix'][from_node][to_node]
+        return data['distance_matrix'][from_node][to_node]
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -136,7 +135,7 @@ def solve_vrp(data):
         return None
 
     routes = []
-    for vehicle_id in range(data['numVehicles']):
+    for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
         route = []
         while not routing.IsEnd(index):
@@ -176,6 +175,31 @@ def delete_hub():
     hubId = request.args.get('id')
     result = hubs.delete_one({'_id': ObjectId(hubId)})
     return parse_json({'deletedCount': result.deletedCount}), 200
+
+# Get the nearest hub by current address
+
+@arrange_bp.route('/hub/near', methods=['GET'])
+def get_nearest_hub():
+
+    address = request.args.get('address')
+    address_lat, address_lon = geocode_address(address)
+    print(address_lat, address_lon)
+
+    distances = []
+    allHubs = hubs.find()
+    minAddress = allHubs[0]["address"]
+    minHub_lat, minHub_lon = geocode_address(minAddress)
+    minDistance = calculate_distance(float(address_lat), float(address_lon), float(minHub_lat), float(minHub_lon))
+
+    for ihub in allHubs:
+        ihub_lat, ihub_lon = geocode_address(ihub['address'])
+        distance = calculate_distance(float(address_lat), float(address_lon), float(ihub_lat), float(ihub_lon))
+        distances.append(distance)
+        if(minDistance > distance):
+            minDistance = distance
+            minAddress = ihub['address']
+
+    return parse_json(minAddress), 200
 
 # Orders Endpoints
 
@@ -269,7 +293,7 @@ def assign_delivery_tasks():
             assignment = {
                 'staffId': str(staff_member['_id']),
                 'orderId': str(order['_id']),
-                'date': datetime.utcnow(),
+                'date': datetime.today(),
                 'deliverTimes': 0,
                 'status': 'pending'
             }
