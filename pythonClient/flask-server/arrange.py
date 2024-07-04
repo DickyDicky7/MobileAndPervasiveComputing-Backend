@@ -24,13 +24,13 @@ delivery = db.deliveries
 
 # Sample data
 sample_hubs = [
-    {"_id": ObjectId("66851d686a086a68a695c186"), "name": "Hub 1", "district": "District 1"},
-    {"_id": ObjectId("66851d686a086a68a695c187"), "name": "Hub 2", "district": "District 2"}
+    {"_id": ObjectId("66851d686a086a68a695c186"), "name": "Hub 1", "address": "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam"},
+    {"_id": ObjectId("66851d686a086a68a695c187"), "name": "Hub 2", "address": "Đường Nguyễn Án, Ho Chi Minh City, Ho Chi Minh, Vietnam"}
 ]
 
 sample_orders = [
-    {"_id": ObjectId("66851e166a086a68a695c187"), "value": 1200000, "weight": 50, "hubId": ObjectId("66851d686a086a68a695c186"), "status": "pending", "deliveryAddress": "123 Vo Thi Sau, District 1, HCM City"},
-    {"_id": ObjectId("66851e166a086a68a695c188"), "value": 800000, "weight": 30, "hubId": ObjectId("66851d686a086a68a695c187"), "status": "pending", "deliveryAddress": "456 Nguyen Trai, District 2, HCM City"}
+    {"_id": ObjectId("66851e166a086a68a695c187"), "value": 1200000, "weight": 50, "hubId": ObjectId("66851d686a086a68a695c186"), "status": "pending", "deliveryAddress": "Nguyễn Biểu, District 5, Ho Chi Minh City, 73009, Vietnam"},
+    {"_id": ObjectId("66851e166a086a68a695c188"), "value": 800000, "weight": 30, "hubId": ObjectId("66851d686a086a68a695c187"), "status": "pending", "deliveryAddress": "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam"}
 ]
 
 sample_staff = [
@@ -81,8 +81,8 @@ def geocode_address(address):
         result = parse_json(response.json())
         if result:
             location = result[0]
-            return parse_json({"lat": location['lat'], "lon" : location['lon']})
-    return parse_json({"response": 'none'})
+            return location['lat'], location['lon']
+    return None, None
 
 @arrange_bp.route('/checkgeo', methods=['GET'])
 def check():
@@ -104,26 +104,26 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 # Use OR-Tools to calculate the optimal routes
 def create_data_model(orders, staff, hub):
     data = {}
-    hub_lat, hub_lng = geocode_address(hub['address'])
-    data['distance_matrix'] = []
-    all_locations = [(hub_lat, hub_lng)] + [geocode_address(order['deliveryAddress']) for order in orders]
+    hub_lat, hub_lon = geocode_address(hub['address'])
+    data['distanceMatrix'] = []
+    all_locations = [(hub_lat, hub_lon)] + [geocode_address(order['deliveryAddress']) for order in orders]
     for loc1 in all_locations:
         distances = []
         for loc2 in all_locations:
-            distances.append(calculate_distance(loc1['lat'], loc1['lng'], loc2['lat'], loc2['lng']))
-        data['distance_matrix'].append(distances)
+            distances.append(calculate_distance(loc1['lat'], loc1['lon'], loc2['lat'], loc2['lon']))
+        data['distanceMatrix'].append(distances)
     data['numVehicles'] = len(staff)
     data['depot'] = 0
     return data
 
 def solve_vrp(data):
-    manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']), data['num_vehicles'], data['depot'])
+    manager = pywrapcp.RoutingIndexManager(len(data['distanceMatrix']), data['numVehicles'], data['depot'])
     routing = pywrapcp.RoutingModel(manager)
 
     def distance_callback(from_index, to_index):
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
-        return data['distance_matrix'][from_node][to_node]
+        return data['distanceMatrix'][from_node][to_node]
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -136,7 +136,7 @@ def solve_vrp(data):
         return None
 
     routes = []
-    for vehicle_id in range(data['num_vehicles']):
+    for vehicle_id in range(data['numVehicles']):
         index = routing.Start(vehicle_id)
         route = []
         while not routing.IsEnd(index):
