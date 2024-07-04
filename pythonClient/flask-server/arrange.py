@@ -109,7 +109,7 @@ def create_data_model(orders, staff, hub):
     for loc1 in all_locations:
         distances = []
         for loc2 in all_locations:
-            distances.append(calculate_distance((loc1['lat']), (loc1['lon']), (loc2['lat']), (loc2['lon'])))
+            distances.append(calculate_distance(float(loc1[0]), float(loc1[1]), float(loc2[0]), float(loc2[1]))) # lat = 0, lon = 1
         data['distance_matrix'].append(distances)
     data['num_vehicles'] = len(staff)
     data['depot'] = 0
@@ -293,7 +293,7 @@ def assign_delivery_tasks():
             assignment = {
                 'staffId': str(staff_member['_id']),
                 'orderId': str(order['_id']),
-                'date': datetime.today(),
+                'date': datetime.today().strftime("%d-%m-%Y"),
                 'deliverTimes': 0,
                 'status': 'pending'
             }
