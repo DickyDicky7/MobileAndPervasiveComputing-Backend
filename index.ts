@@ -171,19 +171,19 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const receiver2 = await User.findOne({ username: "receiver_username_2" });
   const hub1 = new Hub({
     name: "Hub 1",
-    district: "District 1",
+    district: "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam",
   });
   const hub2 = new Hub({
     name: "Hub 2",
-    district: "District 2",
+    district: "Đường Nguyễn Án, Ho Chi Minh City, Ho Chi Minh, Vietnam"    ,
   });
   await hub1.save();
   await hub2.save();
   const order1 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "-", address: "-", phoneNumber: 0, userId:   sender1._id },
-    receiverInfo: { name: "-", address: "-", phoneNumber: 0, userId: receiver1._id },
+      senderInfo: { name:   "Sender1", address: "-", phoneNumber: 0, userId:   sender1._id },
+    receiverInfo: { name: "Receiver1", address: "-", phoneNumber: 0, userId: receiver1._id },
     weight      : 50,
     status      : "pending",
     packageSize : 50,
@@ -191,16 +191,16 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     pickupTime  : "12:30",
     value       :  1200000 ,
     hubId       : hub1._id ,
-    deliveryAddress: "123 Vo Thi Sau, District 1, HCM City",
-            message: "-"                                    ,
+    deliveryAddress: "Nguyễn Biểu, District 5, Ho Chi Minh City, 73009, Vietnam",
+            message: "-"                                                        ,
     inProgress: false,
 
   });
   const order2 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "-", address: "-", phoneNumber: 0, userId:   sender2._id },
-    receiverInfo: { name: "-", address: "-", phoneNumber: 0, userId: receiver2._id },
+      senderInfo: { name:   "Sender2", address: "-", phoneNumber: 0, userId:   sender2._id },
+    receiverInfo: { name: "Receiver2", address: "-", phoneNumber: 0, userId: receiver2._id },
     weight      : 30,
     status      : "pending",
     packageSize : 30,
@@ -208,8 +208,8 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     pickupTime  : "12:30",
     value       :  800000  ,
     hubId       : hub2._id ,
-    deliveryAddress: "456 Nguyen Trai, District 2, HCM City",
-            message: "-"                                     ,
+    deliveryAddress: "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam",
+            message: "-"                                                          ,
     inProgress: false,
 
   });
