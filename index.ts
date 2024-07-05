@@ -174,11 +174,11 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const receiver2 = await User.findOne({ username: "receiver_username_2" });
   const hub1 = new Hub({
     name: "Hub 1",
-    district: "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam",
+    address: "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam",
   });
   const hub2 = new Hub({
     name: "Hub 2",
-    district: "Đường Nguyễn Án, Ho Chi Minh City, Ho Chi Minh, Vietnam"    ,
+    address: "Đường Nguyễn Án, Ho Chi Minh City, Ho Chi Minh, Vietnam"    ,
   });
   await hub1.save();
   await hub2.save();
