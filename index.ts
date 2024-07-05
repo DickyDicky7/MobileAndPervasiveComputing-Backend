@@ -259,6 +259,23 @@ app.get("/checkgeo", async (req: express.Request, res: express.Response, next: e
   }
 })
 
+const imgbbUploader = require("imgbb-uploader");
+app.post("/up-img", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    const byteArray: Uint8Array = new Uint8Array(req.body.image);
+    const       buffer = Buffer.from                 (byteArray);
+    const base64String = buffer.toString("base64");
+    const options = {
+      apiKey: "2b1cc30f70dd96ab10f68948f74b6f06",
+      name  : req.body.imageName,
+      base64string: base64String,
+    };
+    imgbbUploader(options).then((response) => { console.log(response); res.json({ "data": response }); }).catch((error) => { console.error(error); res.json({ "data": error }); });
+  } catch (err) {
+    next  (err);
+  }
+});
+
 app.use(async (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.debug(err);
   res.status(500).json({ "msg": err });
