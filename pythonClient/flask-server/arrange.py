@@ -19,7 +19,7 @@ db = client.test
 # Collections
 hubs = db.hubs
 orders = db.orders
-staffs = db.staff
+staffs = db.staffs
 deliveries = db.deliveries
 
 # Sample data
