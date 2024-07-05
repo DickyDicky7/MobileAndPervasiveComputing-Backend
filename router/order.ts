@@ -50,8 +50,8 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
         await newOrder.save();
         return res.status(201).json({ "msg": "Order confirmed!" });
     }
-    catch {
-        return res.status(500).json({ "msg": "Order confirmation API goes something wrong/unknown" });
+    catch (err) {
+        return res.status(500).json({ "msg": "Order confirmation API goes something wrong/unknown", "err": err });
     }
 
 
