@@ -14,7 +14,7 @@ arrange_bp = Blueprint("arrange",__name__)
 # Connect to MongoDB
 client = MongoClient(os.environ.get("MONGO_DB"))
 maps_key = os.environ.get("GOOGLE_MAP_API")
-db = client.lift
+db = client.test
 
 # Collections
 hubs = db.hubs
@@ -211,7 +211,7 @@ def get_all_orders():
 @arrange_bp.route('/order', methods=['GET'])
 def get_order():
     orderId = request.args.get('id')
-    order = orders.find_one({'_id': ObjectId(orderId)})
+    order = db.orders.find_one({'_id': ObjectId(orderId)})
     return parse_json(order), 200
 
 @arrange_bp.route('/order', methods=['POST'])
