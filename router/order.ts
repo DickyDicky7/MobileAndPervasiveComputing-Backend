@@ -5,7 +5,10 @@ import Order, { ShipmentType, DeliveryType } from "../mongoose_schemas/order";
 
 const router = express.Router();
 
-router.post("/confirmation", async (req: express.Request, res: express.Response, next: express.RequestHandler) =>{
+router.post("/confirmation", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+
+
     const { shipmentType,
             deliveryType,
               senderInfo,
@@ -50,31 +53,56 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
     catch {
         return res.status(500).json({ "msg": "Order confirmation API goes something wrong/unknown" });
     }
+
+
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get   ("/orders", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const response = await axios.get   ("http://pythonserver:27018/orders");
-    res.json(response.data);
+    try {
+        const response = await axios.get   ("http://pythonserver:27018/orders");
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const response = await axios.get   (`http://pythonserver:27018/order?id=${req.query.id}`);
-    res.json(response.data);
+    try {
+        const response = await axios.get   (`http://pythonserver:27018/order?id=${req.query.id}`);
+        res.json(response.data);    
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.post  ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const response = await axios.post  ("http://pythonserver:27018/order"                  , req.body);
-    res.json(response.data);
+    try {
+        const response = await axios.post  ("http://pythonserver:27018/order"                  , req.body);
+        res.json(response.data);    
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.put   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const response = await axios.put   (`http://pythonserver:27018/order?id=${req.query.id}`, req.body);
-    res.json(response.data);
+    try {
+        const response = await axios.put   (`http://pythonserver:27018/order?id=${req.query.id}`, req.body);
+        res.json(response.data);    
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.delete("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const response = await axios.delete(`http://pythonserver:27018/order?id=${req.query.id}`);
-    res.json(response.data);
+    try {
+        const response = await axios.delete(`http://pythonserver:27018/order?id=${req.query.id}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
 });
 
 export default router;

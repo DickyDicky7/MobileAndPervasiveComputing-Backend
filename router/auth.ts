@@ -4,7 +4,10 @@ import * as  bcrypt from     "bcryptjs";
 
 const router = express.Router();
 
-router.post("/sign-up", async (req: express.Request, res: express.Response, next: express.RequestHandler) => {
+router.post("/sign-up", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+
+        
     const { username, password, role } = req.body;
     if (!Object.values(UserRole).includes(role)) {
         return res.status(400).json({"msg": "Role not found"});
@@ -19,9 +22,17 @@ router.post("/sign-up", async (req: express.Request, res: express.Response, next
     {
         return res.status(500).json({"msg": "Sign up API goes something wrong/unknown"});
     }
+
+
+    } catch (err) {
+        next(err);
+    }
 });
 
-router.post("/sign-in", async (req: express.Request, res: express.Response, next: express.RequestHandler) => {
+router.post("/sign-in", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+
+
     const { username, password } = req.body;
     try {
         const user: TUser = await User.findOne({ username: username });
@@ -47,6 +58,11 @@ router.post("/sign-in", async (req: express.Request, res: express.Response, next
     }
     catch (err) {
         res.status(500).json({"msg": "Sign in API goes something wrong/unknown"});
+    }
+
+
+    } catch (err) {
+        next(err);
     }
 });
 

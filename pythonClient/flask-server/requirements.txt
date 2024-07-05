@@ -11,9 +11,9 @@ h5py
 tensorflow-cpu
 cohere
 # tesseract-ocr
-# jupyterlab
-# jupyter-ai
-# jupyter-ai-magics
+jupyterlab
+jupyter-ai
+jupyter-ai-magics
 pymongo
-
+ortools
 
