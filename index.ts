@@ -9,7 +9,8 @@ import   hubRoute from "./router/hub"  ;
 import   a_iRoute from "./router/a.i"  ;
 import staffRoute from "./router/staff";
 import passport  from "./passportJwt";
-import { ensureUserExists } from "./mongoose_schemas/user";
+import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
+import { getOrdersByUserIdAndStatus } from "./mongoose_schemas/order";
 
 redisClient.connect();
 mongoClient.connect();
@@ -42,63 +43,65 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
     res.locals.user = user;
     next();
   })(req,
-     res,
+    res,
     next) ;
-});
-app.use("/protected", orderRoute);
-app.use("/protected",   hubRoute);
-app.use("/protected",   a_iRoute);
-app.use("/protected", staffRoute);
-
-app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.json({ "msg": "Hello 1" });
-});
-
-app.get("/api", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.json({ "msg": "Hello 2" });
-});
-
-app.get("/protected/profile", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.json({ "msg":"Profile", "data":res.locals.user });
-});
-
-// app.get("/save-user", async (req, res) => {
-//   const instance = new User();
-//   instance.username = "test";
-//   instance.password = "test";
-//   await instance.save();
-//   res.json({ "msg": await User.find({}) });
-// });
-
-// app.get("/load-user", async (req, res) => {
-//   res.json({ "msg": await User.find({}) });
-// });
-
-// import axios from "axios";
-app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const response = await axios.get("http://pythonserver:27018/health");
-  res.json(response.data);
-});
-
-// app.get ("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.get ("http://pythonserver:27018/classify-image");
+  });
+  app.use("/protected", orderRoute);
+  app.use("/protected",   hubRoute);
+  app.use("/protected",   a_iRoute);
+  app.use("/protected", staffRoute);
+  
+  app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.json({ "msg": "Hello 1" });
+  });
+  
+  app.get("/api", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.json({ "msg": "Hello 2" });
+  });
+  
+  app.get("/protected/profile", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.json({ "msg":"Profile", "data":res.locals.user });
+  });
+  app.get("/getUserIdByUsername", getUserIdByUsername);
+  app.get("/getOrderByUserIdAndStatus", getOrdersByUserIdAndStatus);
+  
+  // app.get("/save-user", async (req, res) => {
+    //   const instance = new User();
+    //   instance.username = "test";
+    //   instance.password = "test";
+    //   await instance.save();
+    //   res.json({ "msg": await User.find({}) });
+    // });
+    
+    // app.get("/load-user", async (req, res) => {
+      //   res.json({ "msg": await User.find({}) });
+      // });
+      
+      // import axios from "axios";
+      app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        const response = await axios.get("http://pythonserver:27018/health");
+        res.json(response.data);
+      });
+      
+      // app.get ("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        //   const response = await axios.get ("http://pythonserver:27018/classify-image");
 //   res.json(response.data);
 // });
 
 // app.post("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.post("http://pythonserver:27018/classify-image", {
-//     image_url : req.body.image_url
-//   });
-//   res.json(response.data);
-// });
-
-// app.get ("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.get ("http://pythonserver:27018/chat");
-//   res.json(response.data);
-// });
-
-// app.post("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.post(`http://pythonserver:27018/chat?prompt=${req.query.prompt}`);
+  //   const response = await axios.post("http://pythonserver:27018/classify-image", {
+    //     image_url : req.body.image_url
+    //   });
+    //   res.json(response.data);
+    // });
+    
+    // app.get ("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      //   const response = await axios.get ("http://pythonserver:27018/chat");
+      //   res.json(response.data);
+      // });
+      
+      // app.post("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        //   const response = await axios.post(`http://pythonserver:27018/chat?prompt=${req.query.prompt}`);
 //   res.json(response.data);
 // });
 
