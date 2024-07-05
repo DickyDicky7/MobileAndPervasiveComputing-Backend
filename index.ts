@@ -279,7 +279,7 @@ app.post("/up-img", async (req: express.Request, res: express.Response  , next: 
 
     const { data, error } = await supabase.storage
       .from("abc")
-      .upload(`${req.body.imageName}.jpeg`, decode(base64String), {
+      .upload(`${req.body.imageName}.jpeg`, buffer, {
         contentType: "image/jpeg"
       });
 
