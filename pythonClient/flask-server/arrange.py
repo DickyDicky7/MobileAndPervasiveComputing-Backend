@@ -211,7 +211,7 @@ def get_all_orders():
 @arrange_bp.route('/order', methods=['GET'])
 def get_order():
     orderId = request.args.get('id')
-    order = db.orders.find_one({'_id': ObjectId(orderId)})
+    order = orders.find_one({'_id': ObjectId(orderId)})
     return parse_json(order), 200
 
 @arrange_bp.route('/order', methods=['POST'])
