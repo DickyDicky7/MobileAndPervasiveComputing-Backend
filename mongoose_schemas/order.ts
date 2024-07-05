@@ -14,11 +14,13 @@ export enum DeliveryType {
 }
 //component interface
 interface   ISenderInfo {
+    userId     : mongoose.Types.ObjectId,
     name       : string,
     address    : string,
     phoneNumber: number,
 }
 interface IReceiverInfo {
+    userId     : mongoose.Types.ObjectId,
     name       : string,
     address    : string,
     phoneNumber: number,
@@ -38,14 +40,17 @@ export interface IOrder extends mongoose.Document {
     deliveryAddress: string,
             message: string,
     inProgress: boolean,
+    pod: string,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
+    userId     : { type: mongoose.Schema.Types.ObjectId, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
     phoneNumber: { type: Number, required: true },
 });
 const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
+    userId     : { type: mongoose.Schema.Types.ObjectId, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
     phoneNumber: { type: Number, required: true },
@@ -65,7 +70,27 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     deliveryAddress: { type: String, required: true },
             message: { type: String, required: true },
     inProgress: { type: Boolean, required: true },
+    pod: { type: String, required: false },
 });
+
+export const getOrdersByUserIdAndStatus: express.Handler = async (
+    req: express.Request, res: express.Response, next: express.NextFunction
+) => {
+    const { userId, status } = req.body;
+    try{
+        if (!userId){
+            return res.status(400).json({"msg": "userId is required"});
+        }
+        const orders = await Order.find({
+            $or: [{ "senderInfo.userId": new mongoose.Types.ObjectId(userId) }, { "receiverInfo.userId": new mongoose.Types.ObjectId(userId) }],
+            status: status
+        });
+        return res.status(200).json({"orders": orders});
+    }
+    catch(error){
+        return res.status(500).json({ "msg": "Something went wrong"});
+    }
+}
 
 const Order = mongoose.model("Order", order);
 

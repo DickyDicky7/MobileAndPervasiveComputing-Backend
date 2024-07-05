@@ -14,7 +14,7 @@ arrange_bp = Blueprint("arrange",__name__)
 # Connect to MongoDB
 client = MongoClient(os.environ.get("MONGO_DB"))
 maps_key = os.environ.get("GOOGLE_MAP_API")
-db = client.lift
+db = client.test
 
 # Collections
 hubs = db.hubs

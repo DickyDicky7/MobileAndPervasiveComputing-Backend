@@ -52,6 +52,24 @@ export const ensureUserExists: express.RequestHandler = async(req: express.Reque
     await Promise.all(promises);
     next();
 }
+export const getUserIdByUsername: express.RequestHandler = async(req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { username } = req.body;
+    try{
+        if (!username){
+            return res.status(400).json({"msg": "username is required"});
+        }
+        const user = await User.findOne({ username: username });
+        if (user){
+            return res.status(200).json({"userId": user._id});
+        }
+        else{
+            return res.status(404).json({"msg": "User not found"});
+        }
+    }
+    catch(error){
+        return res.status(500).json({ "msg": "Something went wrong"});
+    }
+}
 
 const User = mongoose.model("User", user);
 
