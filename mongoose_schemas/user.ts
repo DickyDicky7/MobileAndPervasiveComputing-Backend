@@ -45,7 +45,7 @@ export const ensureUserExists: express.RequestHandler = async(req: express.Reque
                     role: role
                 })
                 await newUser.save();
-                console.log("YES");
+                console.log(`${newUser.username} | ${newUser.password} | ${newUser._id}`);
             }
         }
     });
