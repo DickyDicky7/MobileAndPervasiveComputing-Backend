@@ -259,18 +259,36 @@ app.get("/checkgeo", async (req: express.Request, res: express.Response, next: e
   }
 })
 
+
+import { createClient } from "@supabase/supabase-js";
+import { decode       } from    "base64-arraybuffer";
+// Create a single supabase client for interacting with your database
+const supabase = createClient("https://qwkgxxjxdccicszuldkm.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3a2d4eGp4ZGNjaWNzenVsZGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyMDIwMjUsImV4cCI6MjAzNTc3ODAyNX0.UyBn7T4RUaZk4Fl6xBfbwOgzXqPKYDJ23azeGd3_E6U");
 const imgbbUploader = require("imgbb-uploader");
-app.post("/up-img", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.post("/up-img", async (req: express.Request, res: express.Response  , next: express.NextFunction) => {
   try {
     const byteArray: Uint8Array = new Uint8Array(req.body.image);
     const       buffer = Buffer.from                 (byteArray);
     const base64String = buffer.toString("base64");
-    const options = {
-      apiKey: "2b1cc30f70dd96ab10f68948f74b6f06",
-      name  : req.body.imageName,
-      base64string: base64String,
-    };
-    imgbbUploader(options).then((response) => { console.log(response); res.json({ "data": response }); }).catch((error) => { console.error(error); res.json({ "data": error }); });
+    // const options = {
+    //   apiKey: "2b1cc30f70dd96ab10f68948f74b6f06",
+    //   name  : req.body.imageName,
+    //   base64string: base64String,
+    // };
+    // imgbbUploader(options).then((response) => { console.log(response); res.json({ "data": response }); }).catch((error) => { console.error(error); res.json({ "data": error }); });
+
+    const { data, error } = await supabase.storage
+      .from("abc")
+      .upload(`${req.body.imageName}.jpeg`, decode(base64String), {
+        contentType: "image/jpeg"
+      });
+
+    const realData = supabase.storage
+      .from("abc")
+      .getPublicUrl(`${req.body.imageName}.jpeg`);
+
+    res.json({ "data": data, "error": error, "realData": realData.data });
+
   } catch (err) {
     next  (err);
   }
