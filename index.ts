@@ -8,8 +8,11 @@ import orderRoute from "./router/order";
 import   hubRoute from "./router/hub"  ;
 import   a_iRoute from "./router/a.i"  ;
 import staffRoute from "./router/staff";
+import   assignRoute from "./router/assign"  ;
+import deliveryRoute from "./router/delivery";
 import passport  from "./passportJwt";
-import { ensureUserExists } from "./mongoose_schemas/user";
+import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
+import { getOrdersByUserIdAndStatus } from "./mongoose_schemas/order";
 
 redisClient.connect();
 mongoClient.connect();
@@ -24,6 +27,9 @@ app.use(express.static(path.join(__dirname, "public")))
 const   bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
+
+const       morgan = require(     "morgan");
+app.use(    morgan("tiny"));
 
 app.use( passport .initialize());
 app.use( ensureUserExists );
@@ -42,63 +48,67 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
     res.locals.user = user;
     next();
   })(req,
-     res,
+    res,
     next) ;
-});
-app.use("/protected", orderRoute);
-app.use("/protected",   hubRoute);
-app.use("/protected",   a_iRoute);
-app.use("/protected", staffRoute);
+  });
+  app.use("/protected", orderRoute);
+  app.use("/protected",   hubRoute);
+  app.use("/protected",   a_iRoute);
+  app.use("/protected", staffRoute);
+  app.use("/protected",   assignRoute);
+app.use("/protected", deliveryRoute);
 
-app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.json({ "msg": "Hello 1" });
-});
-
-app.get("/api", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.json({ "msg": "Hello 2" });
-});
-
-app.get("/protected/profile", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.json({ "msg":"Profile", "data":res.locals.user });
-});
-
-// app.get("/save-user", async (req, res) => {
-//   const instance = new User();
-//   instance.username = "test";
-//   instance.password = "test";
-//   await instance.save();
-//   res.json({ "msg": await User.find({}) });
-// });
-
-// app.get("/load-user", async (req, res) => {
-//   res.json({ "msg": await User.find({}) });
-// });
-
-// import axios from "axios";
-app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const response = await axios.get("http://pythonserver:27018/health");
-  res.json(response.data);
-});
-
-// app.get ("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.get ("http://pythonserver:27018/classify-image");
+  app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.json({ "msg": "Hello 1" });
+  });
+  
+  app.get("/api", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.json({ "msg": "Hello 2" });
+  });
+  
+  app.get("/protected/profile", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.json({ "msg":"Profile", "data":res.locals.user });
+  });
+  app.post("/getUserIdByUsername"      , getUserIdByUsername       );
+  app.post("/getOrderByUserIdAndStatus", getOrdersByUserIdAndStatus);
+  
+  // app.get("/save-user", async (req, res) => {
+    //   const instance = new User();
+    //   instance.username = "test";
+    //   instance.password = "test";
+    //   await instance.save();
+    //   res.json({ "msg": await User.find({}) });
+    // });
+    
+    // app.get("/load-user", async (req, res) => {
+      //   res.json({ "msg": await User.find({}) });
+      // });
+      
+      // import axios from "axios";
+      app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        const response = await axios.get("http://pythonserver:27018/health");
+        res.json(response.data);
+      });
+      
+      // app.get ("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        //   const response = await axios.get ("http://pythonserver:27018/classify-image");
 //   res.json(response.data);
 // });
 
 // app.post("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.post("http://pythonserver:27018/classify-image", {
-//     image_url : req.body.image_url
-//   });
-//   res.json(response.data);
-// });
-
-// app.get ("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.get ("http://pythonserver:27018/chat");
-//   res.json(response.data);
-// });
-
-// app.post("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.post(`http://pythonserver:27018/chat?prompt=${req.query.prompt}`);
+  //   const response = await axios.post("http://pythonserver:27018/classify-image", {
+    //     image_url : req.body.image_url
+    //   });
+    //   res.json(response.data);
+    // });
+    
+    // app.get ("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      //   const response = await axios.get ("http://pythonserver:27018/chat");
+      //   res.json(response.data);
+      // });
+      
+      // app.post("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        //   const response = await axios.post(`http://pythonserver:27018/chat?prompt=${req.query.prompt}`);
 //   res.json(response.data);
 // });
 
@@ -155,6 +165,10 @@ import User from "./mongoose_schemas/user";
 app.get("/init", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const shipper1 = await User.findOne({ username: "shipper_username_1" });
   const shipper2 = await User.findOne({ username: "shipper_username_2" });
+  const sender1 = await User.findOne({ username: "sender_username_1" });
+  const sender2 = await User.findOne({ username: "sender_username_2" });
+  const receiver1 = await User.findOne({ username: "receiver_username_1" });
+  const receiver2 = await User.findOne({ username: "receiver_username_2" });
   const hub1 = new Hub({
     name: "Hub 1",
     district: "District 1",
@@ -168,34 +182,34 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const order1 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "", address: "", phoneNumber: 0 },
-    receiverInfo: { name: "", address: "", phoneNumber: 0 },
+      senderInfo: { name: "-", address: "-", phoneNumber: 0, userId:   sender1._id },
+    receiverInfo: { name: "-", address: "-", phoneNumber: 0, userId: receiver1._id },
     weight      : 50,
     status      : "pending",
     packageSize : 50,
-    pickupDate  : "",
-    pickupTime  : "",
+    pickupDate  : "2024-01-01",
+    pickupTime  : "12:30",
     value       :  1200000 ,
     hubId       : hub1._id ,
     deliveryAddress: "123 Vo Thi Sau, District 1, HCM City",
-            message: ""                                    ,
+            message: "-"                                    ,
     inProgress: false,
 
   });
   const order2 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "", address: "", phoneNumber: 0 },
-    receiverInfo: { name: "", address: "", phoneNumber: 0 },
+      senderInfo: { name: "-", address: "-", phoneNumber: 0, userId:   sender2._id },
+    receiverInfo: { name: "-", address: "-", phoneNumber: 0, userId: receiver2._id },
     weight      : 30,
     status      : "pending",
     packageSize : 30,
-    pickupDate  : "",
-    pickupTime  : "",
+    pickupDate  : "2024-01-01",
+    pickupTime  : "12:30",
     value       :  800000  ,
     hubId       : hub2._id ,
     deliveryAddress: "456 Nguyen Trai, District 2, HCM City",
-            message: ""                                     ,
+            message: "-"                                     ,
     inProgress: false,
 
   });
@@ -232,6 +246,23 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     ]
   });
 });
+
+app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    const response = await axios.get("http://pythonserver:27018/checkgeo");
+    res.json(response.data);
+  } catch (err) {
+    next  (err);
+  }
+})
+
+app.use(async (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.debug(err);
+  res.status(500).json({ "msg": err });
+});
+
+
+
 
 
 
