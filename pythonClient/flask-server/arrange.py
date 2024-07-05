@@ -29,8 +29,60 @@ sample_hubs = [
 ]
 
 sample_orders = [
-    {"_id": ObjectId("66851e166a086a68a695c187"), "value": 1200000, "weight": 50, "hubId": ObjectId("66851d686a086a68a695c186"), "status": "pending", "deliveryAddress": "Nguyễn Biểu, District 5, Ho Chi Minh City, 73009, Vietnam"},
-    {"_id": ObjectId("66851e166a086a68a695c188"), "value": 800000, "weight": 30, "hubId": ObjectId("66851d686a086a68a695c187"), "status": "pending", "deliveryAddress": "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam"}
+       {
+           "_id": ObjectId("66851e166a086a68a695c187"),
+            "shipmentType": "Express",
+            "deliveryType": "Home Delivery",
+            "senderInfo": {
+                "userId": "sender1",
+                "name": "Sender Name 1",
+                "address": "Sender Address 1",
+                "phoneNumber": "123-456-7890"
+            },
+            "receiverInfo": {
+                "userId": "receiver1",
+                "name": "Receiver Name 1",
+                "address": "Receiver Address 1",
+                "phoneNumber": "987-654-3210"
+            },
+            "weight": 5.5,
+            "status": "pending",
+            "packageSize": 2,
+            "pickupDate": "2024-07-01",
+            "pickupTime": "14:00",
+            "value": 150.75,
+            "hubId": ObjectId("66851d686a086a68a695c186"),
+            "deliveryAddress": "Nguyễn Biểu, District 5, Ho Chi Minh City, 73009, Vietnam",
+            "message": "Handle with care",
+            "inProgress": True
+    },
+    {
+        "_id": ObjectId("66851e166a086a68a695c188"),
+        "shipmentType": "Standard",
+        "deliveryType": "Store Pickup",
+        "senderInfo": {
+            "userId": "sender2",
+            "name": "Sender Name 2",
+            "address": "Sender Address 2",
+            "phoneNumber": "123-456-7891"
+        },
+        "receiverInfo": {
+            "userId": "receiver2",
+            "name": "Receiver Name 2",
+            "address": "Receiver Address 2",
+            "phoneNumber": "987-654-3211"
+        },
+        "weight": 10.0,
+        "status": "pending",
+        "packageSize": 5,
+        "pickupDate": "2024-07-02",
+        "pickupTime": "10:30",
+        "value": 75.00,
+        "hubId": ObjectId("66851d686a086a68a695c187"),
+        "deliveryAddress": "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam",
+        "message": "Leave at the door",
+        "inProgress": False
+    },
 ]
 
 sample_staffs = [
@@ -203,11 +255,41 @@ def get_nearest_hub():
 
 # Orders Endpoints
 
+## Get all orders
 @arrange_bp.route('/orders', methods=['GET'])
 def get_all_orders():
     all_orders = orders.find()
     return parse_json(all_orders), 200
 
+## Get all orders matches with senderId
+@arrange_bp.route('/orders/sender', methods=['GET'])
+def get_orders_by_sender_userid():
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({"error": "userId parameter is required"}), 400
+    
+    ordersSender = orders.find({"senderInfo.userId": user_id})
+    order_list = []
+    for order in ordersSender:
+        order_list.append(order)
+    
+    return parse_json(order_list), 200
+
+## Get all orders matches with receiverId
+@arrange_bp.route('/orders/receiver', methods=['GET'])
+def get_orders_by_receiver_userid():
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({"error": "userId parameter is required"}), 400
+    
+    ordersReceiver = orders.find({"receiverInfo.userId": user_id})
+    order_list = []
+    for order in ordersReceiver:
+        order_list.append(order)
+    
+    return parse_json(order_list), 200
+
+## Get order by id
 @arrange_bp.route('/order', methods=['GET'])
 def get_order():
     orderId = request.args.get('id')
@@ -304,7 +386,7 @@ def assign_delivery_tasks():
 
     return jsonify(parse_json(assignments)), 200
 
-# Update status of order, max 3 times failed
+## Update status of order, max 3 times failed
 
 @arrange_bp.route('/delivery/update_status', methods=['POST'])
 def update_delivery_status():
@@ -327,3 +409,15 @@ def update_delivery_status():
             deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'deliverTimes': deliver_times}})
 
     return jsonify({'status': 'updated', 'deliverTimes': deliver_times}), 200
+
+## Get delivery by id
+
+@arrange_bp.route('/delivery/id', methods=['GET'])
+def get_delivery_by_id():
+    delivery_id = request.args.get('deliveryId')
+    if not delivery_id:
+        return jsonify({"error": "delivery_id parameter is required"}), 400
+    
+    deliveries_list = deliveries.find({"_id": delivery_id})
+    return parse_json(deliveries_list), 200
+
