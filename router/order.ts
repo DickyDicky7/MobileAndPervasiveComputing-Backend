@@ -123,6 +123,15 @@ router.get("/orders/receiver", async (req: express.Request, res: express.Respons
     }
 });
 
+router.get("/orders/hub", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/orders/hub?hubId=${req.query.hubId}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
 
 
