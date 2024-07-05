@@ -289,6 +289,16 @@ def get_orders_by_receiver_userid():
     
     return parse_json(order_list), 200
 
+## Get all orders matches with hubId
+@arrange_bp.route('/orders/hub', methods=['GET'])
+def get_orders_by_hubId():
+    hub_id = request.args.get('hubId')
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    order_list = orders.find({"hubId": ObjectId(hub_id)})
+    return parse_json(order_list), 200
+
 ## Get order by id
 @arrange_bp.route('/order', methods=['GET'])
 def get_order():
