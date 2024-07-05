@@ -111,7 +111,8 @@ def parse_json(data):
     if isinstance(data, list):
         for item in data:
             if 'hubId' in item:
-                item['hubId'] = str(item['hubId']["$oid"])
+                if '$oid' in item.get('hubId', {}):
+                    item['hubId'] = str(item['hubId']["$oid"])
             if '_id' in item:
                 item['_id'] = str(item['_id']["$oid"])
             if 'insertedId' in item:
@@ -453,7 +454,7 @@ def get_deliveries_by_hubId():
     order_list = []
     for order in delivery_list:
         order_list.append(order)
-    return parse_json({'list': order_list, 'count': len(order_list)}), 200
+    return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
 
 ## Get all delivery matches with staffId
 @arrange_bp.route('/deliveries/staff', methods=['GET'])
@@ -466,4 +467,4 @@ def get_deliveries_by_staffId():
     order_list = []
     for order in delivery_list:
         order_list.append(order)
-    return parse_json({'list': order_list, 'count': len(order_list)}), 200
+    return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
