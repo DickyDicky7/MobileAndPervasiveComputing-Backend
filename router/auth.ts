@@ -30,13 +30,20 @@ router.post("/sign-in", async (req: express.Request, res: express.Response, next
         }
         // console.log(user.password);
         // console.log(     password);
+        
         const isPasswordMatch = await user.ComparePassword(password);
         if  (!isPasswordMatch) {
             return res.status(401).json({"msg": "Password not match"});
         }
         const payLoad = { sub: user._id };
         const  token  =   jwt.sign(payLoad, process.env.JWT_SECRET_KEY, { expiresIn: "24h" });
-        res.json({ "data": token });
+        res.json({ 
+            "data": {
+                "token": token,
+                "id": user._id,
+                "role": user.role,
+            }
+        });
     }
     catch (err) {
         res.status(500).json({"msg": "Sign in API goes something wrong/unknown"});

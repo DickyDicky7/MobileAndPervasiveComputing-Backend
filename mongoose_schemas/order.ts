@@ -14,11 +14,13 @@ export enum DeliveryType {
 }
 //component interface
 interface   ISenderInfo {
+    userId     : string,
     name       : string,
     address    : string,
     phoneNumber: number,
 }
 interface IReceiverInfo {
+    userId     : string,
     name       : string,
     address    : string,
     phoneNumber: number,
@@ -41,11 +43,13 @@ export interface IOrder extends mongoose.Document {
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
+    userId     : { type: String, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
     phoneNumber: { type: Number, required: true },
 });
 const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
+    userId     : { type: String, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
     phoneNumber: { type: Number, required: true },
@@ -66,6 +70,25 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
             message: { type: String, required: true },
     inProgress: { type: Boolean, required: true },
 });
+
+export const getOrdersByUserIdAndStatus: express.Handler = async (
+    req: express.Request, res: express.Response, next: express.NextFunction
+) => {
+    const { userId, status } = req.body;
+    try{
+        if (!userId){
+            return res.status(400).json({"msg": "userId is required"});
+        }
+        const orders = await Order.find({
+            $or: [{ "senderInfo.userId": userId }, { "receiverInfo.userId": userId }],
+            status: status
+        });
+        return res.status(200).json({"orders": orders});
+    }
+    catch(error){
+        return res.status(500).json({ "msg": "Something went wrong"});
+    }
+}
 
 const Order = mongoose.model("Order", order);
 
