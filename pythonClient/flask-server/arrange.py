@@ -14,7 +14,7 @@ arrange_bp = Blueprint("arrange",__name__)
 # Connect to MongoDB
 client = MongoClient(os.environ.get("MONGO_DB"))
 maps_key = os.environ.get("GOOGLE_MAP_API")
-db = client.test
+db = client.lift
 
 # Collections
 hubs = db.hubs
@@ -111,7 +111,8 @@ def parse_json(data):
     if isinstance(data, list):
         for item in data:
             if 'hubId' in item:
-                item['hubId'] = str(item['hubId']["$oid"])
+                if '$oid' in item.get('hubId', {}):
+                    item['hubId'] = str(item['hubId']["$oid"])
             if '_id' in item:
                 item['_id'] = str(item['_id']["$oid"])
             if 'insertedId' in item:
@@ -317,6 +318,8 @@ def create_order():
 def update_order():
     orderId = request.args.get('id')
     data = request.json
+    if 'hubId' in data:
+        data['hubId'] = ObjectId(data['hubId'])
     result = orders.update_one({'_id': ObjectId(orderId)}, {'$set': data})
     return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
@@ -350,6 +353,8 @@ def create_staff():
 def update_staff():
     staffId = request.args.get('id')
     data = request.json
+    if 'hubId' in data:
+        data['hubId'] = ObjectId(data['hubId'])
     result = staffs.update_one({'_id': ObjectId(staffId)}, {'$set': data})
     return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
@@ -385,6 +390,7 @@ def assign_delivery_tasks():
             assignment = {
                 'staffId': str(staff_member['_id']),
                 'orderId': str(order['_id']),
+                'hubId': str(hub_id),
                 'date': datetime.today().strftime("%d-%m-%Y"),
                 'deliverTimes': 0,
                 'status': 'pending'
@@ -431,3 +437,34 @@ def get_delivery_by_id():
     deliveries_list = deliveries.find({"_id": delivery_id})
     return parse_json(deliveries_list), 200
 
+## Get all delivery
+@arrange_bp.route('/deliveries', methods=['GET'])
+def get_all_deliveries():
+    all_orders = deliveries.find()
+    return parse_json(all_orders), 200
+
+## Get all delivery matches with hubId
+@arrange_bp.route('/deliveries/hub', methods=['GET'])
+def get_deliveries_by_hubId():
+    hub_id = request.args.get('hubId')
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    delivery_list = deliveries.find({"hubId": (hub_id)})
+    order_list = []
+    for order in delivery_list:
+        order_list.append(order)
+    return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
+
+## Get all delivery matches with staffId
+@arrange_bp.route('/deliveries/staff', methods=['GET'])
+def get_deliveries_by_staffId():
+    staff_id = request.args.get('staffId')
+    if not staff_id:
+        return jsonify({"error": "staff_id parameter is required"}), 400
+    
+    delivery_list = deliveries.find({"staffId": (staff_id)})
+    order_list = []
+    for order in delivery_list:
+        order_list.append(order)
+    return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
