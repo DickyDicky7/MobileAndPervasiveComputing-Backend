@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, "public")))
 
 const   bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit:  "1000mb" }));
 
 const       morgan = require(     "morgan");
 app.use(    morgan("tiny"));
