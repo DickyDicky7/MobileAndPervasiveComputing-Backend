@@ -69,8 +69,8 @@ app.use("/protected", deliveryRoute);
   app.get("/protected/profile", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.json({ "msg":"Profile", "data":res.locals.user });
   });
-  app.get("/getUserIdByUsername", getUserIdByUsername);
-  app.get("/getOrderByUserIdAndStatus", getOrdersByUserIdAndStatus);
+  app.post("/getUserIdByUsername"      , getUserIdByUsername       );
+  app.post("/getOrderByUserIdAndStatus", getOrdersByUserIdAndStatus);
   
   // app.get("/save-user", async (req, res) => {
     //   const instance = new User();

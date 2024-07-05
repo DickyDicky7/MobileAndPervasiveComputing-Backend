@@ -40,6 +40,7 @@ export interface IOrder extends mongoose.Document {
     deliveryAddress: string,
             message: string,
     inProgress: boolean,
+    pod: string,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
@@ -69,6 +70,7 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     deliveryAddress: { type: String, required: true },
             message: { type: String, required: true },
     inProgress: { type: Boolean, required: true },
+    pod: { type: String, required: false },
 });
 
 export const getOrdersByUserIdAndStatus: express.Handler = async (
