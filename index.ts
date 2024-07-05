@@ -264,7 +264,7 @@ import { createClient } from "@supabase/supabase-js";
 import { decode       } from    "base64-arraybuffer";
 // Create a single supabase client for interacting with your database
 const supabase = createClient("https://qwkgxxjxdccicszuldkm.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3a2d4eGp4ZGNjaWNzenVsZGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyMDIwMjUsImV4cCI6MjAzNTc3ODAyNX0.UyBn7T4RUaZk4Fl6xBfbwOgzXqPKYDJ23azeGd3_E6U");
-const imgbbUploader = require("imgbb-uploader");
+// const imgbbUploader = require("imgbb-uploader");
 app.post("/up-img", async (req: express.Request, res: express.Response  , next: express.NextFunction) => {
   try {
     const byteArray: Uint8Array = new Uint8Array(req.body.image);
