@@ -9,4 +9,13 @@ router.post("/delivery/update_status", async (req: express.Request, res: express
     res.json(response.data);
 });
 
+router.get("/delivery/id", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/delivery/id?deliveryId=${req.query.deliveryId}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;

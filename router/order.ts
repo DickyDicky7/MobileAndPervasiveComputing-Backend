@@ -105,6 +105,24 @@ router.delete("/order", async (req: express.Request, res: express.Response, next
     }
 });
 
+router.get("/orders/sender", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/orders/sender?userId=${req.query.userId}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/orders/receiver", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/orders/receiver?userId=${req.query.userId}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
 
 
