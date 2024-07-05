@@ -165,6 +165,10 @@ import User from "./mongoose_schemas/user";
 app.get("/init", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const shipper1 = await User.findOne({ username: "shipper_username_1" });
   const shipper2 = await User.findOne({ username: "shipper_username_2" });
+  const sender1 = await User.findOne({ username: "sender_username_1" });
+  const sender2 = await User.findOne({ username: "sender_username_2" });
+  const receiver1 = await User.findOne({ username: "receiver_username_1" });
+  const receiver2 = await User.findOne({ username: "receiver_username_2" });
   const hub1 = new Hub({
     name: "Hub 1",
     district: "District 1",
@@ -178,8 +182,8 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const order1 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "-", address: "-", phoneNumber: 0 },
-    receiverInfo: { name: "-", address: "-", phoneNumber: 0 },
+      senderInfo: { name: "-", address: "-", phoneNumber: 0, userId:   sender1._id },
+    receiverInfo: { name: "-", address: "-", phoneNumber: 0, userId: receiver1._id },
     weight      : 50,
     status      : "pending",
     packageSize : 50,
@@ -195,8 +199,8 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const order2 = new Order({
     shipmentType:  "Package",
     deliveryType: "Standard",
-      senderInfo: { name: "-", address: "-", phoneNumber: 0 },
-    receiverInfo: { name: "-", address: "-", phoneNumber: 0 },
+      senderInfo: { name: "-", address: "-", phoneNumber: 0, userId:   sender2._id },
+    receiverInfo: { name: "-", address: "-", phoneNumber: 0, userId: receiver2._id },
     weight      : 30,
     status      : "pending",
     packageSize : 30,
