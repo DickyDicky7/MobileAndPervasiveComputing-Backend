@@ -240,11 +240,24 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   });
 });
 
-// app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   const response = await axios.get("http://pythonserver:27018/checkgeo");
-//   console.log(response.data)
-//   res.json({});
-// })
+app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    const response = await axios.get("http://pythonserver:27018/checkgeo");
+    res.json(response.data);
+  } catch (err) {
+    next  (err);
+  }
+})
+
+app.use(async (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.debug(err);
+  res.status(500).json({ "msg": err });
+});
+
+
+
+
+
 
 
 
