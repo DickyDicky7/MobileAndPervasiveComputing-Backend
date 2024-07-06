@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, "public")))
 
 const   bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json({ limit:  "1000mb" }));
+app.use(bodyParser.json({ limit:  "100mb" }));
 
 const       morgan = require(     "morgan");
 app.use(    morgan("tiny"));
@@ -210,7 +210,7 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     pickupDate  : "2024-01-01",
     pickupTime  : "12:30",
     value       :  800000  ,
-    hubId       : hub2._id ,
+    hubId       : hub1._id ,
     deliveryAddress: "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam",
             message: "-"                                                          ,
     inProgress: false,
@@ -233,7 +233,7 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     gender: "female",
     weight: 60      ,
     motorcycleCapacity: 100,
-     hubId:     hub2._id,
+     hubId:     hub1._id,
     userId: shipper2._id,
   });
   await staff1.save();
@@ -267,9 +267,9 @@ const supabase = createClient("https://qwkgxxjxdccicszuldkm.supabase.co", "eyJhb
 // const imgbbUploader = require("imgbb-uploader");
 app.post("/up-img", async (req: express.Request, res: express.Response  , next: express.NextFunction) => {
   try {
-    const byteArray: Uint8Array = new Uint8Array(req.body.image);
-    const       buffer = Buffer.from                 (byteArray);
-    const base64String = buffer.toString("base64");
+    // const byteArray: Uint8Array = new Uint8Array(req.body.image);
+    // const       buffer = Buffer.from                 (byteArray);
+    // const base64String = buffer.toString("base64");
     // const options = {
     //   apiKey: "2b1cc30f70dd96ab10f68948f74b6f06",
     //   name  : req.body.imageName,
@@ -279,13 +279,13 @@ app.post("/up-img", async (req: express.Request, res: express.Response  , next: 
 
     const { data, error } = await supabase.storage
       .from("abc")
-      .upload(`${req.body.imageName}.jpeg`, buffer, {
-        contentType: "image/jpeg"
+      .upload(`${req.body.imageName}.jpg`, decode(req.body.image), {
+        contentType: "image/jpg"
       });
 
     const realData = supabase.storage
       .from("abc")
-      .getPublicUrl(`${req.body.imageName}.jpeg`);
+      .getPublicUrl(`${req.body.imageName}.jpg`);
 
     res.json({ "data": data, "error": error, "realData": realData.data });
 
