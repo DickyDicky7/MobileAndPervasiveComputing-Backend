@@ -413,6 +413,7 @@ def update_delivery_status():
     if not delivery:
         return jsonify({'error': 'delivery not found'}), 400
 
+    deliver_times = delivery.get('deliverTimes', 0)
     if status == 'success':
         deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'success'}})
         orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'delivered'}})
