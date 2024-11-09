@@ -17,7 +17,7 @@ import { getOrdersByUserIdAndStatus } from "./mongoose_schemas/order";
 redisClient.connect();
 mongoClient.connect();
 
-const app = express();
+const app  = express();
 const port = parseInt(process.env.PORT) || process.argv[3] || 8088;
 
 app.use(express.static(path.join(__dirname, "public")))
