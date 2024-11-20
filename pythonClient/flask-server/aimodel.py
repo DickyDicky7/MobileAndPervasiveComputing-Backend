@@ -1,13 +1,29 @@
 from flask import Flask, request, jsonify, Blueprint # type: ignore
 from transformers import ViTImageProcessor, ViTForImageClassification # type: ignore
 from dotenv import load_dotenv # type: ignore
-import cohere # type: ignore
 import os
+import cohere # type: ignore
 from flask_cors import CORS, cross_origin # type: ignore
 from PIL import Image # type: ignore
 import requests # type: ignore
 import pytesseract # type: ignore
 from io import BytesIO
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key="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",
+)
+
+completion = client.chat.completions.create(
+  model="openai/gpt-3.5-turbo",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+)
 
 load_dotenv()  
 
@@ -95,11 +111,8 @@ def extract_text_from_image():
     # uploaded_file = request.files['image']
     # image = Image.open(uploaded_file)
 
-## TUAN ANH FIX CHO NAY (
     url = request.json.get('image_url')
     image = Image.open(requests.get(url, stream=True).raw)
-## TUAN ANH FIX CHO NAY )
-
     extracted_information = pytesseract.image_to_string(image)
 
     return jsonify({'extracted_text': extracted_information})
