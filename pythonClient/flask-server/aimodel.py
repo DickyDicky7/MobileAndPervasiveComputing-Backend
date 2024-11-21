@@ -10,9 +10,11 @@ import pytesseract # type: ignore
 from io import BytesIO
 from openai import OpenAI
 
+load_dotenv()  
+
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key=os.environ.get("OPEN_AI_API_KEY"),
 )
 
 completion = client.chat.completions.create(
@@ -25,13 +27,12 @@ completion = client.chat.completions.create(
   ]
 )
 
-load_dotenv()  
-
 co = cohere.Client(os.environ.get("COHERE_API_KEY"))
 
 ai_bp = Blueprint('aimodel', __name__)
 
 CORS(ai_bp)
+
 # Setup ViT model and feature extractor
 image_processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
 model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
@@ -46,6 +47,7 @@ def chat_with_cohere(prompt):
     return str(response.text)
 
 @ai_bp.route('/health', methods=['GET'])
+@cross_origin()
 def health_check():
     return jsonify({"status": "UP"}), 200
 
@@ -105,6 +107,7 @@ def recommendation():
     return ({'response': response})
 
 @ai_bp.route('/extract-text-from-image', methods=['POST', 'GET'])
+@cross_origin()
 def extract_text_from_image():
     if request.method == 'GET':                                            
         return ({'response': 'Please enter your image'})     
