@@ -210,46 +210,19 @@
             "schema": {
               "type": "object",
               "properties": {
-                "shipmentType": {
-                  "example": "any"
-                },
-                "deliveryType": {
-                  "example": "any"
-                },
                 "senderInfo": {
                   "example": "any"
                 },
                 "receiverInfo": {
                   "example": "any"
                 },
-                "packageSize": {
-                  "example": "any"
-                },
-                "weight": {
-                  "example": "any"
-                },
-                "status": {
-                  "example": "any"
-                },
-                "pickupDate": {
-                  "example": "any"
-                },
-                "pickupTime": {
-                  "example": "any"
-                },
-                "value": {
+                "deliveryInfo": {
                   "example": "any"
                 },
                 "hubId": {
                   "example": "any"
                 },
-                "deliveryAddress": {
-                  "example": "any"
-                },
                 "message": {
-                  "example": "any"
-                },
-                "inProgress": {
                   "example": "any"
                 }
               }
@@ -1051,46 +1024,19 @@
             "schema": {
               "type": "object",
               "properties": {
-                "shipmentType": {
-                  "example": "any"
-                },
-                "deliveryType": {
-                  "example": "any"
-                },
                 "senderInfo": {
                   "example": "any"
                 },
                 "receiverInfo": {
                   "example": "any"
                 },
-                "packageSize": {
-                  "example": "any"
-                },
-                "weight": {
-                  "example": "any"
-                },
-                "status": {
-                  "example": "any"
-                },
-                "pickupDate": {
-                  "example": "any"
-                },
-                "pickupTime": {
-                  "example": "any"
-                },
-                "value": {
+                "deliveryInfo": {
                   "example": "any"
                 },
                 "hubId": {
                   "example": "any"
                 },
-                "deliveryAddress": {
-                  "example": "any"
-                },
                 "message": {
-                  "example": "any"
-                },
-                "inProgress": {
                   "example": "any"
                 }
               }
