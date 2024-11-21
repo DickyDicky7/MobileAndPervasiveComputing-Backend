@@ -5,10 +5,10 @@ pillow
 requests
 pytesseract
 python-dotenv
-
+flask_cors
 openai
-h5py
-tensorflow-cpu
+# h5py
+# tensorflow-cpu
 cohere
 # tesseract-ocr
 jupyterlab

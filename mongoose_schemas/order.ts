@@ -25,23 +25,23 @@ interface IReceiverInfo {
     address    : string,
     phoneNumber: number,
 }
-export interface IOrder extends mongoose.Document {
+interface IDeliveryInfo {
     shipmentType: ShipmentType,
     deliveryType: DeliveryType,
-      senderInfo:   ISenderInfo,
-    receiverInfo: IReceiverInfo,
-    weight      : number,
-    status      : string,
+         status : string,
     packageSize : number,
     pickupDate  : string,
     pickupTime  : string,
     value       : number,
+}
+export interface IOrder extends mongoose.Document {
+      senderInfo:   ISenderInfo,
+    receiverInfo: IReceiverInfo,
+    deliveryInfo: IDeliveryInfo,
     hubId       :  mongoose.Types.ObjectId,
-    deliveryAddress: string,
-            message: string,
-    inProgress: boolean,
-    podTxt: string,
-    podImg: string,
+    message: string,
+    podTxt : string,
+    podImg : string,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
@@ -56,23 +56,24 @@ const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
     address    : { type: String, required: true },
     phoneNumber: { type: Number, required: true },
 });
-const order: mongoose.Schema<IOrder> = new mongoose.Schema({
+const deliveryInfo: mongoose.Schema<IDeliveryInfo> = new mongoose.Schema({
     shipmentType: { type: String, enum: ShipmentType, required: true },
     deliveryType: { type: String, enum: DeliveryType, required: true },
-      senderInfo: { type:   senderInfo, required: true },
-    receiverInfo: { type: receiverInfo, required: true },
-    weight      : { type: Number, required: true },
     status      : { type: String, required: true },
     packageSize : { type: Number, required: true },
     pickupDate  : { type: String, required: true, match: /^\d{4}-\d{2}-\d{2}$/ },
     pickupTime  : { type: String, required: true, match: /^([01]\d|2[0-3]):([0-5]\d)$/ },
     value       : { type: Number, required: true },
-    hubId       : { type: mongoose.Schema.Types.ObjectId, required: true },
-    deliveryAddress: { type: String, required: true },
-            message: { type: String, required: true },
-    inProgress: { type: Boolean, required: true },
-    podTxt: { type: String, required: false },
-    podImg: { type: String, required: false },
+});
+const order: mongoose.Schema<IOrder> = new mongoose.Schema({
+    
+      senderInfo: { type:   senderInfo, required: true },
+    receiverInfo: { type: receiverInfo, required: true },
+    deliveryInfo: { type: deliveryInfo, required: true },
+    hubId:        { type: mongoose.Schema.Types.ObjectId, required: true },
+    message: { type: String, required: true  },
+    podTxt:  { type: String, required: false },
+    podImg:  { type: String, required: false },
 });
 
 export const getOrdersByUserIdAndStatus: express.Handler = async (

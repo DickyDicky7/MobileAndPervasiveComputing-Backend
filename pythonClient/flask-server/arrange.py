@@ -3,18 +3,24 @@ from pymongo import MongoClient # type: ignore
 from bson.objectid import ObjectId # type: ignore
 from bson import json_util # type: ignore
 from datetime import datetime
+from flask_cors import CORS, cross_origin # type: ignore
 from ortools.constraint_solver import routing_enums_pb2 # type: ignore
 from ortools.constraint_solver import pywrapcp # type: ignore
 import json
 import requests  # type: ignore
 import os
+from flask_cors import CORS, cross_origin # type: ignore
 
 arrange_bp = Blueprint("arrange",__name__)
+CORS(arrange_bp)
 
 # Connect to MongoDB
 client = MongoClient(os.environ.get("MONGO_DB"))
 maps_key = os.environ.get("GOOGLE_MAP_API")
-db = client.test
+
+db = client.lift
+CORS(arrange_bp)
+
 
 # Collections
 hubs = db.hubs
@@ -92,6 +98,7 @@ sample_staffs = [
 
 # Insert sample data into the collections
 @arrange_bp.route('/init', methods=['GET'])
+@cross_origin()
 def insert_sample_data():
     # Insert hubs
     hubs.insert_many(sample_hubs)
@@ -138,6 +145,7 @@ def geocode_address(address):
     return None, None
 
 @arrange_bp.route('/checkgeo', methods=['GET'])
+@cross_origin()
 def check():
     response = geocode_address("1600 Amphitheatre Parkway, Mountain View, CA")
     return ({'response': response})
@@ -179,9 +187,28 @@ def solve_vrp(data):
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+    dimension_name = 'Distance'
+    routing.AddDimension(
+        transit_callback_index,
+        0,  # không có khoảng trống
+        3000,  # khoảng cách tối đa của phương tiện
+        True,  # bắt đầu từ số 0
+        dimension_name)
+    
+    # def cost_callback(from_index, to_index, vehicle_index):
+        # from_node = manager.IndexToNode(from_index)
+        # to_node = manager.IndexToNode(to_index)
+        # distance = data['distance_matrix'][from_node][to_node]
+        # return distance * data['vehicle_costs'][vehicle_index]
+
+    # cost_callback_index = routing.RegisterTransitCallback(cost_callback)
+    # routing.SetFixedCostOfAllVehicles(cost_callback_index)
 
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+    # search_parameters.local_search_metaheuristic = (routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+    # search_parameters.time_limit.seconds = 30
+
 
     solution = routing.SolveWithParameters(search_parameters)
     if not solution:
@@ -200,23 +227,27 @@ def solve_vrp(data):
 # Hubs Endpoints
 
 @arrange_bp.route('/hubs', methods=['GET'])
+@cross_origin()
 def get_all_hubs():
     all_hubs = hubs.find()
     return parse_json(all_hubs), 200
 
 @arrange_bp.route('/hub', methods=['GET'])
+@cross_origin()
 def get_hub():
     hubId = request.args.get('id')
     hub = hubs.find_one({'_id': ObjectId(hubId)})
     return parse_json(hub), 200
 
 @arrange_bp.route('/hub', methods=['POST'])
+@cross_origin()
 def create_hub():
     data = request.json
     result = hubs.insert_one(data)
     return parse_json({'insertedId': result.inserted_id}), 201
 
 @arrange_bp.route('/hub', methods=['PUT'])
+@cross_origin()
 def update_hub():
     hubId = request.args.get('id')
     data = request.json
@@ -224,6 +255,7 @@ def update_hub():
     return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @arrange_bp.route('/hub', methods=['DELETE'])
+@cross_origin()
 def delete_hub():
     hubId = request.args.get('id')
     result = hubs.delete_one({'_id': ObjectId(hubId)})
@@ -232,6 +264,7 @@ def delete_hub():
 # Get the nearest hub by current address
 
 @arrange_bp.route('/hub/near', methods=['GET'])
+@cross_origin()
 def get_nearest_hub():
 
     address = request.args.get('address')
@@ -258,12 +291,14 @@ def get_nearest_hub():
 
 ## Get all orders
 @arrange_bp.route('/orders', methods=['GET'])
+@cross_origin()
 def get_all_orders():
     all_orders = orders.find()
     return parse_json(all_orders), 200
 
 ## Get all orders matches with senderId
 @arrange_bp.route('/orders/sender', methods=['GET'])
+@cross_origin()
 def get_orders_by_sender_userid():
     user_id = request.args.get('userId')
     if not user_id:
@@ -278,6 +313,7 @@ def get_orders_by_sender_userid():
 
 ## Get all orders matches with receiverId
 @arrange_bp.route('/orders/receiver', methods=['GET'])
+@cross_origin()
 def get_orders_by_receiver_userid():
     user_id = request.args.get('userId')
     if not user_id:
@@ -292,6 +328,7 @@ def get_orders_by_receiver_userid():
 
 ## Get all orders matches with hubId
 @arrange_bp.route('/orders/hub', methods=['GET'])
+@cross_origin()
 def get_orders_by_hubId():
     hub_id = request.args.get('hubId')
     if not hub_id:
@@ -302,12 +339,14 @@ def get_orders_by_hubId():
 
 ## Get order by id
 @arrange_bp.route('/order', methods=['GET'])
+@cross_origin()
 def get_order():
     orderId = request.args.get('id')
     order = orders.find_one({'_id': ObjectId(orderId)})
     return parse_json(order), 200
 
 @arrange_bp.route('/order', methods=['POST'])
+@cross_origin()
 def create_order():
     data = request.json
     data['hubId'] = ObjectId(data['hubId'])
@@ -315,6 +354,7 @@ def create_order():
     return parse_json({'insertedId': result.inserted_id}), 201
 
 @arrange_bp.route('/order', methods=['PUT'])
+@cross_origin()
 def update_order():
     orderId = request.args.get('id')
     data = request.json
@@ -324,6 +364,7 @@ def update_order():
     return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @arrange_bp.route('/order', methods=['DELETE'])
+@cross_origin()
 def delete_order():
     orderId = request.args.get('id')
     result = orders.delete_one({'_id': ObjectId(orderId)})
@@ -332,17 +373,20 @@ def delete_order():
 # Staff Endpoints
 
 @arrange_bp.route('/staffs', methods=['GET'])
+@cross_origin()
 def get_all_staff():
     all_staff = staffs.find()
     return parse_json(all_staff), 200
 
 @arrange_bp.route('/staff', methods=['GET'])
+@cross_origin()
 def get_staff():
     staffId = request.args.get('id')
     staff_member = staffs.find_one({'_id': ObjectId(staffId)})
     return parse_json(staff_member), 200
 
 @arrange_bp.route('/staff', methods=['POST'])
+@cross_origin()
 def create_staff():
     data = request.json
     data['hubId'] = ObjectId(data['hubId'])
@@ -350,6 +394,7 @@ def create_staff():
     return parse_json({'insertedId': result.inserted_id}), 201
 
 @arrange_bp.route('/staff', methods=['PUT'])
+@cross_origin()
 def update_staff():
     staffId = request.args.get('id')
     data = request.json
@@ -359,6 +404,7 @@ def update_staff():
     return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @arrange_bp.route('/staff', methods=['DELETE'])
+@cross_origin()
 def delete_staff():
     staffId = request.args.get('id')
     result = staffs.delete_one({'_id': ObjectId(staffId)})
@@ -367,6 +413,7 @@ def delete_staff():
 # Assign endpoints
 
 @arrange_bp.route('/assign', methods=['POST'])
+@cross_origin()
 def assign_delivery_tasks():
     hub_id = request.json['hubId']
     hub = hubs.find_one({'_id': ObjectId(hub_id)})
@@ -405,6 +452,7 @@ def assign_delivery_tasks():
 ## Update status of order, max 3 times failed
 
 @arrange_bp.route('/delivery/update_status', methods=['POST'])
+@cross_origin()
 def update_delivery_status():
     delivery_id = request.json['deliveryId']
     status = request.json['status']
@@ -430,6 +478,7 @@ def update_delivery_status():
 ## Get delivery by id
 
 @arrange_bp.route('/delivery/id', methods=['GET'])
+@cross_origin()
 def get_delivery_by_id():
     delivery_id = request.args.get('deliveryId')
     if not delivery_id:
@@ -440,12 +489,14 @@ def get_delivery_by_id():
 
 ## Get all delivery
 @arrange_bp.route('/deliveries', methods=['GET'])
+@cross_origin()
 def get_all_deliveries():
     all_orders = deliveries.find()
     return parse_json(all_orders), 200
 
 ## Get all delivery matches with hubId
 @arrange_bp.route('/deliveries/hub', methods=['GET'])
+@cross_origin()
 def get_deliveries_by_hubId():
     hub_id = request.args.get('hubId')
     if not hub_id:
@@ -459,6 +510,7 @@ def get_deliveries_by_hubId():
 
 ## Get all delivery matches with staffId
 @arrange_bp.route('/deliveries/staff', methods=['GET'])
+@cross_origin()
 def get_deliveries_by_staffId():
     staff_id = request.args.get('staffId')
     if not staff_id:
