@@ -9,43 +9,25 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
     try {
 
 
-    const { shipmentType,
-            deliveryType,
-              senderInfo,
+    const { senderInfo,
             receiverInfo,
-            packageSize,
-            weight,
-            status,
-            pickupDate,
-            pickupTime,
-            value,
+            deliveryInfo,
             hubId,
-            deliveryAddress,
-                    message,
-            inProgress,
+            message,
         } = req.body;
-    if (!Object.values(ShipmentType).includes(shipmentType)){
+    if (!Object.values(ShipmentType).includes(deliveryInfo.shipmentType)){
         return res.status(400).json({"msg": "Shipment type not found"});
     }
-    if (!Object.values(DeliveryType).includes(deliveryType)) {
+    if (!Object.values(DeliveryType).includes(deliveryInfo.deliveryType)) {
         return res.status(400).json({ "msg": "Delivery type not found" });
     }
     try {
         const newOrder = new Order({
-            shipmentType: shipmentType,
-            deliveryType: deliveryType,
               senderInfo:   senderInfo,
             receiverInfo: receiverInfo,
-            weight      : weight,
-            status      : status,
-            packageSize : packageSize,
-            pickupDate  : pickupDate,
-            pickupTime  : pickupTime,
-            value: value,
+            deliveryInfo: deliveryInfo,
             hubId: new mongoose.Types.ObjectId(hubId),
-            deliveryAddress: deliveryAddress,
-                    message:         message,
-            inProgress: inProgress,
+            message: message,
         })
         await newOrder.save();
         return res.status(201).json({ "msg": "Order confirmed!" });
