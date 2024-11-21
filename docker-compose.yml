@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   nodejsserver:
-    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendnodejsserver:latest
+    image: rnseminarcnpm2.azurecr.io/seminarcnpmbackendnodejsserver:latest
     build: .
     ports:
       - "8088:8088"
@@ -31,7 +31,7 @@ services:
       - mgcfg-data:/data/configdb
 
   pythonserver:
-    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendpythonserver:latest
+    image: rnseminarcnpm2.azurecr.io/seminarcnpmbackendpythonserver:latest
     build:
       context: ./pythonClient
       dockerfile: Dockerfile
