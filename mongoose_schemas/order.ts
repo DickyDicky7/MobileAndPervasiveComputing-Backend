@@ -28,11 +28,11 @@ interface IReceiverInfo {
 interface IDeliveryInfo {
     shipmentType: ShipmentType,
     deliveryType: DeliveryType,
-    status: string,
-    packageSize: number,
-    pickupDate: string,
-    pickupTime: string,
-    value: number,
+         status : string,
+    packageSize : number,
+    pickupDate  : string,
+    pickupTime  : string,
+    value       : number,
 }
 export interface IOrder extends mongoose.Document {
       senderInfo:   ISenderInfo,
@@ -40,8 +40,8 @@ export interface IOrder extends mongoose.Document {
     deliveryInfo: IDeliveryInfo,
     hubId       :  mongoose.Types.ObjectId,
     message: string,
-    podTxt: string,
-    podImg: string,
+    podTxt : string,
+    podImg : string,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
@@ -71,7 +71,7 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     receiverInfo: { type: receiverInfo, required: true },
     deliveryInfo: { type: deliveryInfo, required: true },
     hubId:        { type: mongoose.Schema.Types.ObjectId, required: true },
-    message: { type: String, required: true },
+    message: { type: String, required: true  },
     podTxt:  { type: String, required: false },
     podImg:  { type: String, required: false },
 });
