@@ -1,5 +1,6 @@
 import * as express from "express";
 import axios from "axios";
+import Staff from "../mongoose_schemas/staff";
 
 const router = express.Router();
 
@@ -43,6 +44,15 @@ router.delete("/staff", async (req: express.Request, res: express.Response, next
     try {
         const response = await axios.delete(`http://pythonserver:27018/staff?id=${req.query.id}`);
         res.json(response.data);    
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post("/get-staff-by-user-id", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const staff = await Staff.findOne({ userId: req.body.userId });
+        res.json({ "staff": staff });
     } catch (err) {
         next(err);
     }
