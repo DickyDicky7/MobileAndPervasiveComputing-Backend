@@ -41,6 +41,10 @@ var hasInit = false;
 //   }
 //   next();
 // });
+const swaggerUi       = require("swagger-ui-express"                      );
+const swaggerDocument = require(                   "./swagger-output.json");
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/auth", authRoute);
 app.use("/protected", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   
@@ -166,12 +170,12 @@ import Hub   from "./mongoose_schemas/hub"  ;
 import Order from "./mongoose_schemas/order";
 import User from "./mongoose_schemas/user";
 app.get("/init", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const shipper1 = await User.findOne({ username: "shipper_username_1" });
-  const shipper2 = await User.findOne({ username: "shipper_username_2" });
-  const sender1 = await User.findOne({ username: "sender_username_1" });
-  const sender2 = await User.findOne({ username: "sender_username_2" });
-  const receiver1 = await User.findOne({ username: "receiver_username_1" });
-  const receiver2 = await User.findOne({ username: "receiver_username_2" });
+  const shipper1 = await User.findOne({ username: "sh1" });
+  const shipper2 = await User.findOne({ username: "sh2" });
+  const sender1 = await User.findOne({ username: "se1" });
+  const sender2 = await User.findOne({ username: "se2" });
+  const receiver1 = await User.findOne({ username: "re1" });
+  const receiver2 = await User.findOne({ username: "re2" });
   const hub1 = new Hub({
     name: "Hub 1",
     address: "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam",
