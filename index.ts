@@ -183,38 +183,35 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   await hub1.save();
   await hub2.save();
   const order1 = new Order({
-    shipmentType:  "Package",
-    deliveryType: "Standard",
       senderInfo: { name:   "Sender1", address: "-", phoneNumber: 0, userId:   sender1._id },
     receiverInfo: { name: "Receiver1", address: "-", phoneNumber: 0, userId: receiver1._id },
-    weight      : 50,
-    status      : "pending",
-    packageSize : 50,
-    pickupDate  : "2024-01-01",
-    pickupTime  : "12:30",
-    value       :  1200000 ,
-    hubId       : hub1._id ,
-    deliveryAddress: "Nguyễn Biểu, District 5, Ho Chi Minh City, 73009, Vietnam",
-            message: "-"                                                        ,
-    inProgress: false,
-
+    deliveryInfo: { 
+      shipmentType:  "Package",
+      deliveryType: "Standard",
+      status      : "pending",
+      packageSize : 50,
+      pickupDate  : "2024-01-01",
+      pickupTime  : "12:30",
+      value       :  1200000 ,
+    },
+    hubId: hub1._id,
+    message: "-",
   });
   const order2 = new Order({
-    shipmentType:  "Package",
-    deliveryType: "Standard",
+    
       senderInfo: { name:   "Sender2", address: "-", phoneNumber: 0, userId:   sender2._id },
     receiverInfo: { name: "Receiver2", address: "-", phoneNumber: 0, userId: receiver2._id },
-    weight      : 30,
-    status      : "pending",
-    packageSize : 30,
-    pickupDate  : "2024-01-01",
-    pickupTime  : "12:30",
-    value       :  800000  ,
-    hubId       : hub1._id ,
-    deliveryAddress: "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam",
-            message: "-"                                                          ,
-    inProgress: false,
-
+    deliveryInfo: {
+      shipmentType:  "Package",
+      deliveryType: "Standard",
+      status      : "pending",
+      packageSize : 30,
+      pickupDate  : "2024-01-01",
+      pickupTime  : "12:30",
+      value       :  800000  
+    },
+    hubId: hub1._id ,
+    message: "-",
   });
   await order1.save();
   await order2.save();
