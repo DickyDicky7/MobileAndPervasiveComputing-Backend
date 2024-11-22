@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   nodejsserver:
-    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendnodejsserver:latest
+    image: rnseminarcnpm2.azurecr.io/seminarcnpmbackendnodejsserver:latest
     build: .
     ports:
       - "8088:8088"
@@ -12,7 +12,7 @@ services:
     environment:
       JWT_SECRET_KEY: LaughOutLoud
       REDIS_URL: redis://redis:6379
-      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
+      MONGO_URL: mongodb+srv://root:123@cluster0.ppxonhm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
   redis:
     image: redis/redis-stack:7.0.6-RC9
     ports:
@@ -31,7 +31,7 @@ services:
       - mgcfg-data:/data/configdb
 
   pythonserver:
-    image: rnseminarcnpm.azurecr.io/seminarcnpmbackendpythonserver:latest
+    image: rnseminarcnpm2.azurecr.io/seminarcnpmbackendpythonserver:latest
     build:
       context: ./pythonClient
       dockerfile: Dockerfile
@@ -41,16 +41,20 @@ services:
       - redis
       - mongo
     environment:
-      COHERE_API_KEY: s1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t
-      COLLAB_API_KEY:    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
-      MONGO_DB : mongodb://user:pass@mongo:27017/?directConnection=true
-      GOOGLE_MAP_API: 668551c9e921e378819210twyca5b8f
+      OPEN_AI_API_KEY: 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
+      COHERE_API_KEY:  s1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t
+      COLLAB_API_KEY:     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
+      MONGO_DB : mongodb+srv://root:123@cluster0.ppxonhm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      GOOGLE_MAP_API:  668551c9e921e378819210twyca5b8f
       REDIS_URL: redis://redis:6379
-      MONGO_URL: mongodb://user:pass@mongo:27017/?directConnection=true
+      MONGO_URL: mongodb+srv://root:123@cluster0.ppxonhm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
 volumes:
   redis-data:
   mongo-data:
   mgcfg-data:
+
+
+
 
 
