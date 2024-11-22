@@ -176,6 +176,10 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const client2 = await User.findOne({ username: "cl2" });
   const client3 = await User.findOne({ username: "cl3" });
   const client4 = await User.findOne({ username: "cl4" });
+  const sender1 = await User.findOne({ username: "se1"});
+  const sender2 = await User.findOne({ username: "se2"});
+  const receiver1 = await User.findOne({ username: "re1"});
+  const receiver2 = await User.findOne({ username: "re2"});
   const hub1 = new Hub({
     name: "Hub 1",
     address: "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam",
