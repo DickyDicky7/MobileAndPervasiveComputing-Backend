@@ -1,8 +1,9 @@
 import mongoose from "mongoose"; import * as express from "express"; import * as bcrypt from "bcryptjs";
 
 export enum UserRole {
-      Sender =   "sender",
-    Receiver = "receiver",
+      Client =   "client",
+//    Sender =   "sender",
+//  Receiver = "receiver",
     Shipper  = "shipper",
     Coordinator = "coordinator",
 }

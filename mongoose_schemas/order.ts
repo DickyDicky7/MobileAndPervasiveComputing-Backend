@@ -17,13 +17,13 @@ interface   ISenderInfo {
     userId     : mongoose.Types.ObjectId,
     name       : string,
     address    : string,
-    phoneNumber: number,
+    phoneNumber: string,
 }
 interface IReceiverInfo {
     userId     : mongoose.Types.ObjectId,
     name       : string,
     address    : string,
-    phoneNumber: number,
+    phoneNumber: string,
 }
 interface IDeliveryInfo {
     shipmentType: ShipmentType,
@@ -48,13 +48,13 @@ const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
     userId     : { type: mongoose.Schema.Types.ObjectId, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
+    phoneNumber: { type: String, required: true },
 });
 const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
     userId     : { type: mongoose.Schema.Types.ObjectId, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
+    phoneNumber: { type: String, required: true },
 });
 const deliveryInfo: mongoose.Schema<IDeliveryInfo> = new mongoose.Schema({
     shipmentType: { type: String, enum: ShipmentType, required: true },
