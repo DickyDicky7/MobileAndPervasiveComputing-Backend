@@ -176,10 +176,6 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   const client2 = await User.findOne({ username: "cl2" });
   const client3 = await User.findOne({ username: "cl3" });
   const client4 = await User.findOne({ username: "cl4" });
-  const sender1 = await User.findOne({ username: "se1"});
-  const sender2 = await User.findOne({ username: "se2"});
-  const receiver1 = await User.findOne({ username: "re1"});
-  const receiver2 = await User.findOne({ username: "re2"});
   const hub1 = new Hub({
     name: "Hub 1",
     address: "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam",
@@ -191,8 +187,8 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   await hub1.save();
   await hub2.save();
   const order1 = new Order({
-      senderInfo: { name:   "Sender1", address: "-", phoneNumber: 0, userId:   sender1._id },
-    receiverInfo: { name: "Receiver1", address: "-", phoneNumber: 0, userId: receiver1._id },
+      senderInfo: { name:   "Sender1", address: "-", phoneNumber: 0, userId: client1._id },
+    receiverInfo: { name: "Receiver1", address: "-", phoneNumber: 0, userId: client3._id },
     deliveryInfo: { 
       shipmentType:  "Package",
       deliveryType: "Standard",
@@ -207,8 +203,8 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
   });
   const order2 = new Order({
     
-      senderInfo: { name:   "Sender2", address: "-", phoneNumber: 0, userId:   sender2._id },
-    receiverInfo: { name: "Receiver2", address: "-", phoneNumber: 0, userId: receiver2._id },
+      senderInfo: { name:   "Sender2", address: "-", phoneNumber: 0, userId: client2._id },
+    receiverInfo: { name: "Receiver2", address: "-", phoneNumber: 0, userId: client4._id },
     deliveryInfo: {
       shipmentType:  "Package",
       deliveryType: "Standard",
