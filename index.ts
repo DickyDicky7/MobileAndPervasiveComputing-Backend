@@ -190,32 +190,32 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
       senderInfo: { name:   "Sender1", address: "-", phoneNumber: 0, userId: client1._id },
     receiverInfo: { name: "Receiver1", address: "-", phoneNumber: 0, userId: client3._id },
     deliveryInfo: { 
-      shipmentType:  "Package",
+      shipmentType: "Package" ,
       deliveryType: "Standard",
-      status      : "pending",
-      packageSize : 50,
+      status      : "pending" ,
+      packageSize :          50 ,
       pickupDate  : "2024-01-01",
-      pickupTime  : "12:30",
-      value       :  1200000 ,
+      pickupTime  : "12:30" ,
+      value       :  1200000,
     },
-    hubId: hub1._id,
-    message: "-",
+    hubId  : hub1._id,
+    message: "-"     ,
   });
   const order2 = new Order({
     
       senderInfo: { name:   "Sender2", address: "-", phoneNumber: 0, userId: client2._id },
     receiverInfo: { name: "Receiver2", address: "-", phoneNumber: 0, userId: client4._id },
     deliveryInfo: {
-      shipmentType:  "Package",
+      shipmentType: "Package" ,
       deliveryType: "Standard",
-      status      : "pending",
-      packageSize : 30,
+      status      : "pending" ,
+      packageSize :          30 ,
       pickupDate  : "2024-01-01",
       pickupTime  : "12:30",
-      value       :  800000  
+      value       :  800000,  
     },
-    hubId: hub1._id ,
-    message: "-",
+    hubId  : hub1._id,
+    message: "-"     ,
   });
   await order1.save();
   await order2.save();
