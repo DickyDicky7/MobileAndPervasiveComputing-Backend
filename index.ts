@@ -264,7 +264,7 @@ app.get("/checkgeo", async (req: express.Request, res: express.Response, next: e
 import { createClient } from "@supabase/supabase-js";
 import { decode       } from    "base64-arraybuffer";
 // Create a single supabase client for interacting with your database
-const supabase = createClient("https://qwkgxxjxdccicszuldkm.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3a2d4eGp4ZGNjaWNzenVsZGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyMDIwMjUsImV4cCI6MjAzNTc3ODAyNX0.UyBn7T4RUaZk4Fl6xBfbwOgzXqPKYDJ23azeGd3_E6U");
+const supabase = createClient("https://fdahwnwelowronwevgty.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkYWh3bndlbG93cm9ud2V2Z3R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIyNDM5ODEsImV4cCI6MjA0NzgxOTk4MX0.bWacxK5VWlAWEh6V-mp4FUgAhya0w1hDb9bKUmmulvk");
 // const imgbbUploader = require("imgbb-uploader");
 app.post("/up-img", async (req: express.Request, res: express.Response  , next: express.NextFunction) => {
   try {
