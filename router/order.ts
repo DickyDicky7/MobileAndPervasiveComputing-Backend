@@ -9,14 +9,14 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
     try {
 
 
-    const { senderInfo,
+    const {   senderInfo,
             receiverInfo,
             deliveryInfo,
-            hubId,
+              hubId,
             message,
         } = req.body;
-    if (!Object.values(ShipmentType).includes(deliveryInfo.shipmentType)){
-        return res.status(400).json({"msg": "Shipment type not found"});
+    if (!Object.values(ShipmentType).includes(deliveryInfo.shipmentType)) {
+        return res.status(400).json({"msg": "Shipments type not found" });
     }
     if (!Object.values(DeliveryType).includes(deliveryInfo.deliveryType)) {
         return res.status(400).json({ "msg": "Delivery type not found" });
@@ -26,7 +26,7 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
               senderInfo:   senderInfo,
             receiverInfo: receiverInfo,
             deliveryInfo: deliveryInfo,
-            hubId: new mongoose.Types.ObjectId(hubId),
+              hubId: new mongoose.Types.ObjectId(hubId),
             message: message,
         })
         await newOrder.save();
