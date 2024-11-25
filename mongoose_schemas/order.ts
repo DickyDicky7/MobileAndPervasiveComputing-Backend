@@ -84,10 +84,43 @@ export const getOrdersByUserIdAndStatus: express.Handler = async (
         if (!userId){
             return res.status(400).json({"msg": "userId is required"});
         }
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ msg: "Invalid userId format" });
+        }
         const orders = await Order.find({
-            $or: [{ "senderInfo.userId": new mongoose.Types.ObjectId(userId) }, { "receiverInfo.userId": new mongoose.Types.ObjectId(userId) }],
-            status: status
+            $or: [
+                { "senderInfo.userId": userId },
+                { "receiverInfo.userId": userId }],
+            "deliveryInfo.status": status
         });
+        return res.status(200).json({"orders": orders});
+    }
+    catch(error){
+        return res.status(500).json({ "msg": "Something went wrong"});
+    }
+}
+export const getOrderByUserIdAndType: express.Handler = async (
+    req: express.Request, res: express.Response, next: express.NextFunction
+) => {
+    const { userId, type } = req.body;
+    try{
+        if (!userId){
+            return res.status(400).json({"msg": "userId is required"});
+        }
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ msg: "Invalid userId format" });
+        }
+        var orders;
+        if (type === 'send'){
+            orders = await Order.find({
+                "senderInfo.userId": userId,
+            });
+        }
+        if (type === 'receive'){
+            orders = await Order.find({
+                "receiverInfo.userId": userId,
+            });
+        }
         return res.status(200).json({"orders": orders});
     }
     catch(error){
