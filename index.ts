@@ -12,7 +12,8 @@ import   assignRoute from "./router/assign"  ;
 import deliveryRoute from "./router/delivery";
 import passport  from "./passportJwt";
 import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
-import { getOrdersByUserIdAndStatus, getOrderByUserIdAndType } from "./mongoose_schemas/order";
+import { getOrdersByUserIdAndStatus
+       , getOrdersByUserIdAndType   } from "./mongoose_schemas/order";
 
 redisClient.connect();
 mongoClient.connect();
@@ -78,7 +79,7 @@ app.use("/protected", deliveryRoute);
   });
   app.post("/getUserIdByUsername"      , getUserIdByUsername       );
   app.post("/getOrderByUserIdAndStatus", getOrdersByUserIdAndStatus);
-  app.post("/getOrderByUserIdAndType"  , getOrderByUserIdAndType);
+  app.post("/getOrderByUserIdAndType"  , getOrdersByUserIdAndType  );
   
   // app.get("/save-user", async (req, res) => {
     //   const instance = new User();
