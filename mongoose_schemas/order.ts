@@ -17,22 +17,22 @@ interface   ISenderInfo {
     userId     : mongoose.Types.ObjectId,
     name       : string,
     address    : string,
-    phoneNumber: number,
+    phoneNumber: string,
 }
 interface IReceiverInfo {
     userId     : mongoose.Types.ObjectId,
     name       : string,
     address    : string,
-    phoneNumber: number,
+    phoneNumber: string,
 }
 interface IDeliveryInfo {
     shipmentType: ShipmentType,
     deliveryType: DeliveryType,
-    status: string,
-    packageSize: number,
-    pickupDate: string,
-    pickupTime: string,
-    value: number,
+         status : string,
+    packageSize : number,
+    pickupDate  : string,
+    pickupTime  : string,
+    value       : number,
 }
 export interface IOrder extends mongoose.Document {
       senderInfo:   ISenderInfo,
@@ -40,21 +40,21 @@ export interface IOrder extends mongoose.Document {
     deliveryInfo: IDeliveryInfo,
     hubId       :  mongoose.Types.ObjectId,
     message: string,
-    podTxt: string,
-    podImg: string,
+    podTxt : string,
+    podImg : string,
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
     userId     : { type: mongoose.Schema.Types.ObjectId, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
+    phoneNumber: { type: String, required: true },
 });
 const receiverInfo: mongoose.Schema<IReceiverInfo> = new mongoose.Schema({
     userId     : { type: mongoose.Schema.Types.ObjectId, required: true },
     name       : { type: String, required: true },
     address    : { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
+    phoneNumber: { type: String, required: true },
 });
 const deliveryInfo: mongoose.Schema<IDeliveryInfo> = new mongoose.Schema({
     shipmentType: { type: String, enum: ShipmentType, required: true },
@@ -71,7 +71,7 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     receiverInfo: { type: receiverInfo, required: true },
     deliveryInfo: { type: deliveryInfo, required: true },
     hubId:        { type: mongoose.Schema.Types.ObjectId, required: true },
-    message: { type: String, required: true },
+    message: { type: String, required: true  },
     podTxt:  { type: String, required: false },
     podImg:  { type: String, required: false },
 });
@@ -80,18 +80,39 @@ export const getOrdersByUserIdAndStatus: express.Handler = async (
     req: express.Request, res: express.Response, next: express.NextFunction
 ) => {
     const { userId, status } = req.body;
-    try{
+    try {
         if (!userId){
-            return res.status(400).json({"msg": "userId is required"});
+            return res.status(400).json({ "msg": "userId is required" });
         }
         const orders = await Order.find({
-            $or: [{ "senderInfo.userId": new mongoose.Types.ObjectId(userId) }, { "receiverInfo.userId": new mongoose.Types.ObjectId(userId) }],
-            status: status
+            $or: [ { "senderInfo.userId": new mongoose.Types.ObjectId(userId) }, { "receiverInfo.userId": new mongoose.Types.ObjectId(userId) } ],
+            "deliveryInfo.status": status
         });
-        return res.status(200).json({"orders": orders});
+        return res.status(200).json({ "orders": orders });
     }
-    catch(error){
-        return res.status(500).json({ "msg": "Something went wrong"});
+    catch (error) {
+        return res.status(500).json({ "msg": "Something went wrong" });
+    }
+}
+export const getOrdersByUserIdAndType: express.Handler = async (
+    req: express.Request, res: express.Response, next: express.NextFunction
+) => {
+    const { userId, type } = req.body;
+    try {
+        if (!userId) {
+            return res.status(400).json({ "msg": "userId is required" });
+        }
+        var orders;
+        if (type === "send") {
+            orders = await Order.find({   "senderInfo.userId": new mongoose.Types.ObjectId(userId), });
+        }
+        if (type === "receive"){
+            orders = await Order.find({ "receiverInfo.userId": new mongoose.Types.ObjectId(userId), });
+        }
+        return res.status(200).json({ "orders": orders });
+    }
+    catch (error) {
+        return res.status(500).json({ "msg": "Something went wrong" });
     }
 }
 
