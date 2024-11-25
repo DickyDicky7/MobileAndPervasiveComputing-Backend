@@ -80,45 +80,39 @@ export const getOrdersByUserIdAndStatus: express.Handler = async (
     req: express.Request, res: express.Response, next: express.NextFunction
 ) => {
     const { userId, status } = req.body;
-    try{
+    try {
         if (!userId){
-            return res.status(400).json({"msg": "userId is required"});
+            return res.status(400).json({ "msg": "userId is required" });
         }
         const orders = await Order.find({
-            $or: [
-                { "senderInfo.userId": new mongoose.Types.ObjectId(userId) },
-                { "receiverInfo.userId": new mongoose.Types.ObjectId(userId) }],
+            $or: [ { "senderInfo.userId": new mongoose.Types.ObjectId(userId) }, { "receiverInfo.userId": new mongoose.Types.ObjectId(userId) } ],
             "deliveryInfo.status": status
         });
-        return res.status(200).json({"orders": orders});
+        return res.status(200).json({ "orders": orders });
     }
-    catch(error){
-        return res.status(500).json({ "msg": "Something went wrong"});
+    catch (error) {
+        return res.status(500).json({ "msg": "Something went wrong" });
     }
 }
-export const getOrderByUserIdAndType: express.Handler = async (
+export const getOrdersByUserIdAndType: express.Handler = async (
     req: express.Request, res: express.Response, next: express.NextFunction
 ) => {
     const { userId, type } = req.body;
-    try{
-        if (!userId){
-            return res.status(400).json({"msg": "userId is required"});
+    try {
+        if (!userId) {
+            return res.status(400).json({ "msg": "userId is required" });
         }
         var orders;
-        if (type === 'send'){
-            orders = await Order.find({
-                "senderInfo.userId": new mongoose.Types.ObjectId(userId),
-            });
+        if (type === "send") {
+            orders = await Order.find({   "senderInfo.userId": new mongoose.Types.ObjectId(userId), });
         }
-        if (type === 'receive'){
-            orders = await Order.find({
-                "receiverInfo.userId": new mongoose.Types.ObjectId(userId),
-            });
+        if (type === "receive"){
+            orders = await Order.find({ "receiverInfo.userId": new mongoose.Types.ObjectId(userId), });
         }
-        return res.status(200).json({"orders": orders});
+        return res.status(200).json({ "orders": orders });
     }
-    catch(error){
-        return res.status(500).json({ "msg": "Something went wrong"});
+    catch (error) {
+        return res.status(500).json({ "msg": "Something went wrong" });
     }
 }
 
