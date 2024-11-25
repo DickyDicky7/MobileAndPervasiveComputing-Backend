@@ -16,4 +16,5 @@ jupyter-ai
 jupyter-ai-magics
 pymongo
 ortools
-
+pyzbar
+qrcode

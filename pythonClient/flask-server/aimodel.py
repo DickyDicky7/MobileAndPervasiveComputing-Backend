@@ -16,9 +16,8 @@ client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
   api_key=os.environ.get("OPEN_AI_API_KEY"),
 )
-
 completion = client.chat.completions.create(
-  model="openai/gpt-3.5-turbo",
+  model="liquid/lfm-40b:free",
   messages=[
     {
       "role": "user",
@@ -27,7 +26,7 @@ completion = client.chat.completions.create(
   ]
 )
 
-co = cohere.Client(os.environ.get("COHERE_API_KEY"))
+# co = cohere.Client(os.environ.get("COHERE_API_KEY"))
 
 ai_bp = Blueprint('aimodel', __name__)
 
@@ -40,11 +39,21 @@ model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
 # Set CoHere API key
 # os.environ["COHERE_API_KEY"] = 's1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t'
 
-def chat_with_cohere(prompt):
-    response = co.chat(
-        message=prompt
+def chat_bot(prompt):
+    # response = co.chat(
+    #     message=prompt
+    # )
+    # return str(response.text)
+    completion = client.chat.completions.create(
+        model="liquid/lfm-40b:free",
+        messages=[
+            {
+            "role": "user",
+            "content": prompt
+            }
+        ]
     )
-    return str(response.text)
+    return completion.choices[0].message.content
 
 @ai_bp.route('/health', methods=['GET'])
 @cross_origin()
@@ -88,7 +97,7 @@ def chat():
     if request.method == 'GET':                                            
         return ({'response': 'Please enter your question'})                             
     prompt = request.args.get('prompt')
-    response = chat_with_cohere(prompt)
+    response = chat_bot(prompt)
     return ({'response': response})
 
 @ai_bp.route('/recommendation', methods=['POST', 'GET'])
@@ -103,7 +112,7 @@ def recommendation():
     prompt = "How to package {category} for logistics company?"
 
     # Use the API to generate a response
-    response = chat_with_cohere(prompt)
+    response = chat_bot(prompt)
     return ({'response': response})
 
 @ai_bp.route('/extract-text-from-image', methods=['POST', 'GET'])
