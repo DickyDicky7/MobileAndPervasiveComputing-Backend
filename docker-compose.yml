@@ -7,7 +7,7 @@ services:
       - "8088:8088"
     depends_on:
       - redis
-      - mongo
+#     - mongo
       - pythonserver
     environment:
       JWT_SECRET_KEY: LaughOutLoud
@@ -19,16 +19,16 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
-  mongo:
-    image: mongodb/mongodb-atlas-local:latest
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGODB_INITDB_ROOT_USERNAME=user
-      - MONGODB_INITDB_ROOT_PASSWORD=pass
-    volumes:
-      - mongo-data:/data/db
-      - mgcfg-data:/data/configdb
+# mongo:
+#   image: mongodb/mongodb-atlas-local:latest
+#   ports:
+#     - "27017:27017"
+#   environment:
+#     - MONGODB_INITDB_ROOT_USERNAME=user
+#     - MONGODB_INITDB_ROOT_PASSWORD=pass
+#   volumes:
+#     - mongo-data:/data/db
+#     - mgcfg-data:/data/configdb
 
   pythonserver:
     image: rnseminarcnpm2.azurecr.io/seminarcnpmbackendpythonserver:latest
@@ -37,9 +37,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "27018:27018"
+      -             "5200:5200"
     depends_on:
       - redis
-      - mongo
+#     - mongo
     environment:
       OPEN_AI_API_KEY: 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
       COHERE_API_KEY:  s1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t
@@ -51,9 +52,8 @@ services:
 
 volumes:
   redis-data:
-  mongo-data:
-  mgcfg-data:
-
+# mongo-data:
+# mgcfg-data:
 
 
 
