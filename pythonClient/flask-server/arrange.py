@@ -445,7 +445,7 @@ def assign_delivery_tasks():
             deliveries.insert_one(assignment)
             assignments.append(assignment)
 
-            orders.update_one({'_id': order['_id']}, {'$set': {'status': 'delivering'}})
+            orders.update_one({'_id': order['_id']}, {'$set': {'status': 'inProgress'}})
 
     return jsonify(parse_json(assignments)), 200
 
@@ -464,7 +464,7 @@ def update_delivery_status():
     deliver_times = delivery.get('deliverTimes', 0)
     if status == 'success':
         deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'success'}})
-        orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'delivered'}})
+        orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'success'}})
     elif status == 'failed':
         deliver_times = delivery.get('deliverTimes', 0) + 1
         if deliver_times >= 3:
