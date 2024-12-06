@@ -20,9 +20,11 @@ mongoClient.connect();
 
 const app  = express();
 const port = parseInt(process.env.PORT) || process.argv[3] || 8088;
+const cors = require("cors");
 
-app.use(express.static(path.join(__dirname, "public")))
-  .set("views", path.join(__dirname, "views"))
+app.use(cors());
+app.use(express.static(path.join(__dirname, "public"     )))
+  .set("views"      ,  path.join(__dirname,        "views"))
   .set("view engine", "ejs");
 
 const   bodyParser = require("body-parser");
