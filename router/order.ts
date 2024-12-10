@@ -120,6 +120,15 @@ router.get("/orders/hub", async (req: express.Request, res: express.Response, ne
     }
 });
 
+router.put("/order/payStatus", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.put(`http://pythonserver:27018/order/payStatus?id=${req.query.id}&payStatus=${req.query.payStatus}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
 
 
