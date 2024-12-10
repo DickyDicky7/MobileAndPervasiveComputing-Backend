@@ -373,7 +373,7 @@ def delete_order():
 # Update pay status of order
 @arrange_bp.route('/order/payStatus', methods=['PUT'])
 @cross_origin()
-def update_pay_status(order_id):
+def update_pay_status():
     try:
         new_status = request.json.get("payStatus")
         if not new_status:
