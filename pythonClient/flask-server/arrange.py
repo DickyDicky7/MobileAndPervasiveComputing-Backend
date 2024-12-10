@@ -370,6 +370,26 @@ def delete_order():
     result = orders.delete_one({'_id': ObjectId(orderId)})
     return parse_json({'deleted_count': result.deleted_count}), 200
 
+# Update pay status of order
+@arrange_bp.route('/order', methods=['PUT'])
+@cross_origin()
+def update_pay_status(order_id):
+    try:
+        new_status = request.json.get("payStatus")
+        if not new_status:
+            return jsonify({"error": "Missing payStatus in request body"}), 400
+        
+        result = orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {"payStatus": new_status}}
+        )
+        if result.matched_count == 0:
+            return jsonify({"message": "Order not found"}), 404
+
+        return jsonify({"message": "Pay status updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Staff Endpoints
 
 @arrange_bp.route('/staffs', methods=['GET'])
