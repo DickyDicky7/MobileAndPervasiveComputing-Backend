@@ -371,7 +371,7 @@ def delete_order():
     return parse_json({'deleted_count': result.deleted_count}), 200
 
 # Update pay status of order
-@arrange_bp.route('/order', methods=['PUT'])
+@arrange_bp.route('/order/payStatus', methods=['PUT'])
 @cross_origin()
 def update_pay_status(order_id):
     try:
