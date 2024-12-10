@@ -64,6 +64,16 @@
         }
       }
     },
+    "/getOrderByUserIdAndType": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "description": "",
@@ -200,6 +210,65 @@
         }
       }
     },
+    "/protected/users": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/protected/user": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
     "/protected/confirmation": {
       "post": {
         "description": "",
@@ -223,6 +292,12 @@
                   "example": "any"
                 },
                 "message": {
+                  "example": "any"
+                },
+                "payStatus": {
+                  "example": "any"
+                },
+                "payWith": {
                   "example": "any"
                 }
               }
@@ -332,6 +407,19 @@
     },
     "/protected/orders/hub": {
       "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/protected/order/payStatus": {
+      "put": {
         "description": "",
         "responses": {
           "200": {
@@ -1038,6 +1126,12 @@
                 },
                 "message": {
                   "example": "any"
+                },
+                "payStatus": {
+                  "example": "any"
+                },
+                "payWith": {
+                  "example": "any"
                 }
               }
             }
@@ -1130,6 +1224,16 @@
         }
       }
     },
+    "/order/payStatus": {
+      "put": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/staffs": {
       "get": {
         "description": "",
@@ -1191,6 +1295,50 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
         "responses": {
           "200": {
             "description": "OK"
