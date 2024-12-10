@@ -14,6 +14,8 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
             deliveryInfo,
               hubId,
             message,
+            payStatus,
+            payWith  ,
         } = req.body;
     if (!Object.values(ShipmentType).includes(deliveryInfo.shipmentType)) {
         return res.status(400).json({"msg": "Shipments type not found" });
@@ -28,6 +30,10 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
             deliveryInfo: deliveryInfo,
               hubId: new mongoose.Types.ObjectId(hubId),
             message: message,
+            podTxt : "",
+            podImg : "",
+            payStatus: payStatus,
+            payWith  : payWith  ,
         })
         await newOrder.save();
         return res.status(201).json({ "msg": "Order confirmed!" });
