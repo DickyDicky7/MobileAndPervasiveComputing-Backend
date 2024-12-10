@@ -42,8 +42,8 @@ export interface IOrder extends mongoose.Document {
     message  : string,
     podTxt   : string,
     podImg   : string,
-    payStatus: string,
-    payWith  : string,
+    payStatus: string, // pending | success | cancel
+    payWith  : string, // mono    | cash    | wallet
 }
 //schema
 const   senderInfo: mongoose.Schema<  ISenderInfo> = new mongoose.Schema({
@@ -76,8 +76,8 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     message  : { type: String, required: true  },
     podTxt   : { type: String, required: false },
     podImg   : { type: String, required: false },
-    payStatus: { type: String, required: true  },
-    payWith  : { type: String, required: true  },
+    payStatus: { type: String, required: true  }, // pending | success | cancel
+    payWith  : { type: String, required: true  }, // mono    | cash    | wallet
 });
 
 export const getOrdersByUserIdAndStatus: express.Handler = async (

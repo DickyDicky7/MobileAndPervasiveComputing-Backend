@@ -204,6 +204,10 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     },
     hubId  : hub1._id,
     message: "-"     ,
+    podTxt : "-"     ,
+    podImg : "-"     ,
+    payStatus: "cancel",
+    payWith  : "wallet",
   });
   const order2 = new Order({
     
@@ -220,6 +224,10 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
     },
     hubId  : hub1._id,
     message: "-"     ,
+    podTxt : "-"     ,
+    podImg : "-"     ,
+    payStatus: "cancel",
+    payWith  : "wallet",
   });
   await order1.save();
   await order2.save();
