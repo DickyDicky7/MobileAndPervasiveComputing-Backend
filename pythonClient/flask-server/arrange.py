@@ -375,20 +375,21 @@ def delete_order():
 @cross_origin()
 def update_pay_status():
     try:
-        new_status = request.json.get("payStatus")
+        new_status = request.args.get("payStatus")
+        order_id = request.args.get('id')
         if not new_status:
-            return jsonify({"error": "Missing payStatus in request body"}), 400
+            return parse_json({"error": "Missing payStatus in request body"}), 400
         
         result = orders.update_one(
             {"_id": ObjectId(order_id)},
             {"$set": {"payStatus": new_status}}
         )
         if result.matched_count == 0:
-            return jsonify({"message": "Order not found"}), 404
+            return parse_json({"message": "Order not found"}), 404
 
-        return jsonify({"message": "Pay status updated successfully"}), 200
+        return parse_json({"message": "Pay status updated successfully"}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return parse_json({"error": str(e)}), 500
 
 # Staff Endpoints
 
