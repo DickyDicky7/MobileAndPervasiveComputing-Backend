@@ -5,7 +5,10 @@ export enum UserRole {
 //    Sender =   "sender",
 //  Receiver = "receiver",
     Shipper  = "shipper",
-    Coordinator = "coordinator",
+    Administrator =
+   "administrator",
+      Coordinator =
+     "coordinator",
 }
 
 export interface IUser extends mongoose.Document {
