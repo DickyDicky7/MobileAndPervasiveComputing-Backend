@@ -38,7 +38,9 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
         const savedOrder = await newOrder.save();
         return res.status(201).json({ 
             "msg": "Order confirmed!",
-            "orderId": savedOrder._id});
+            "orderId": savedOrder._id,
+            "order##": savedOrder    ,
+        });
     }
     catch (err) {
         return res.status(500).json({ "msg": "Order confirmation API goes something wrong/unknown", "err": err });
