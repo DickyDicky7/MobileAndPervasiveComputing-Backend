@@ -35,8 +35,12 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
             payStatus: payStatus,
             payWith  : payWith  ,
         })
-        await newOrder.save();
-        return res.status(201).json({ "msg": "Order confirmed!" });
+        const savedOrder = await newOrder.save();
+        return res.status(201).json({ 
+            "msg": "Order confirmed!",
+            "orderId": savedOrder._id,
+            "order##": savedOrder    ,
+        });
     }
     catch (err) {
         return res.status(500).json({ "msg": "Order confirmation API goes something wrong/unknown", "err": err });
@@ -114,6 +118,15 @@ router.get("/orders/receiver", async (req: express.Request, res: express.Respons
 router.get("/orders/hub", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/orders/hub?hubId=${req.query.hubId}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.put("/order/payStatus", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.put(`http://pythonserver:27018/order/payStatus?id=${req.query.id}&payStatus=${req.query.payStatus}`);
         res.json(response.data);
     } catch (err) {
         next(err);

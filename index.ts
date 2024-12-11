@@ -4,6 +4,7 @@ import axios from "axios";
 import redisClient from "./redisClient";
 import mongoClient from "./mongoClient";
 import  authRoute from "./router/auth" ;
+import  userRoute from "./router/user" ;
 import orderRoute from "./router/order";
 import   hubRoute from "./router/hub"  ;
 import   a_iRoute from "./router/a.i"  ;
@@ -61,12 +62,13 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
     res,
     next) ;
   });
+  app.use("/protected",  userRoute);
   app.use("/protected", orderRoute);
   app.use("/protected",   hubRoute);
   app.use("/protected",   a_iRoute);
   app.use("/protected", staffRoute);
   app.use("/protected",   assignRoute);
-app.use("/protected", deliveryRoute);
+  app.use("/protected", deliveryRoute);
 
   app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.json({ "msg": "Hello 1" });
