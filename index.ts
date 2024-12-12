@@ -5,6 +5,7 @@ import redisClient from "./redisClient";
 import mongoClient from "./mongoClient";
 import  authRoute from "./router/auth" ;
 import  userRoute from "./router/user" ;
+import  momoRoute from "./router/momo" ;
 import orderRoute from "./router/order";
 import   hubRoute from "./router/hub"  ;
 import   a_iRoute from "./router/a.i"  ;
@@ -63,6 +64,7 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
     next) ;
   });
   app.use("/protected",  userRoute);
+  app.use("/protected",  momoRoute);
   app.use("/protected", orderRoute);
   app.use("/protected",   hubRoute);
   app.use("/protected",   a_iRoute);
