@@ -167,3 +167,12 @@ def api_order_id():
     except Exception as e:
         return parse_json({"error": str(e)}), 500
 
+@momo_bp.route("/pay/momo/check/latest", methods=["POST"])
+@cross_origin()
+def api_check_latest():
+    order_id = latest_order
+    try:
+        result = check_transaction(order_id)
+        return parse_json({"result": result})
+    except Exception as e:
+        return parse_json({"error": str(e)}), 500
