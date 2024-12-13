@@ -103,3 +103,28 @@ def get_staff_by_row_num():
         )
 
     return parse_json(res), 200
+
+# Search staff and display from number rows
+@staff_bp.route('/staff/search', methods=['GET'])
+@cross_origin()
+def search_staff_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"name": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            staffs.find(query)
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
