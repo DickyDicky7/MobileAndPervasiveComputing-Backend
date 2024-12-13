@@ -377,3 +377,35 @@ def search_delivery_by_row_num():
         )
 
     return parse_json(res), 200
+
+# Count all hub
+@arrange_bp.route('/deliveries/count', methods=['GET'])
+@cross_origin()
+def count_hub():
+    res = deliveries.count_documents({})
+    return parse_json(res), 200
+
+# Count hub and display from number rows
+@arrange_bp.route('/delivery/search/count', methods=['GET'])
+@cross_origin()
+def count_delivery_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"status": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            deliveries.find(query)
+            .skip(number_row)
+            .limit(limit)
+        ).count()
+
+    return parse_json(res), 200

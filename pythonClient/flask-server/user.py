@@ -104,3 +104,35 @@ def search_user_by_row_num():
         )
 
     return parse_json(res), 200
+
+# Count all hub
+@user_bp.route('/users/count', methods=['GET'])
+@cross_origin()
+def count_user():
+    res = users.count_documents({})
+    return parse_json(res), 200
+
+# Count hub and display from number rows
+@user_bp.route('/user/search/count', methods=['GET'])
+@cross_origin()
+def count_user_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"username": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            users.find(query)
+            .skip(number_row)
+            .limit(limit)
+        ).count()
+
+    return parse_json(res), 200

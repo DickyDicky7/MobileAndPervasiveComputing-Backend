@@ -171,11 +171,44 @@ def search_hub_by_row_num():
             }
     if ObjectId.is_valid(search_str):
         query["$or"].append({"_id": ObjectId(search_str)})
-        
+
     res = list(
             hubs.find(query)
             .skip(number_row)
             .limit(limit)
         )
+
+    return parse_json(res), 200
+
+# Count all hub
+@hub_bp.route('/hubs/count', methods=['GET'])
+@cross_origin()
+def count_hub():
+    res = hubs.count_documents({})
+    return parse_json(res), 200
+
+# Count hub and display from number rows
+@hub_bp.route('/hub/search/count', methods=['GET'])
+@cross_origin()
+def count_hub_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"name": {"$regex": search_str, "$options": "i"}},
+                    {"address": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            hubs.find(query)
+            .skip(number_row)
+            .limit(limit)
+        ).count()
 
     return parse_json(res), 200

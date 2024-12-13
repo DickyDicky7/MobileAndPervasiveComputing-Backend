@@ -192,3 +192,35 @@ def search_order_by_row_num():
         )
 
     return parse_json(res), 200
+
+# Count all hub
+@order_bp.route('/orders/count', methods=['GET'])
+@cross_origin()
+def count_order():
+    res = orders.count_documents({})
+    return parse_json(res), 200
+
+# Count hub and display from number rows
+@order_bp.route('/order/search/count', methods=['GET'])
+@cross_origin()
+def count_order_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"_id": {"$regex": search_str, "$options": "i"}}
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})    
+
+    res = list(
+            orders.find(query)
+            .skip(number_row)
+            .limit(limit)
+        ).count()
+
+    return parse_json(res), 200
