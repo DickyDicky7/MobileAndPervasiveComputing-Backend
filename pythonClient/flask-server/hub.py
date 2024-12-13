@@ -87,8 +87,8 @@ def get_all_hubs():
 @hub_bp.route('/hub', methods=['GET'])
 @cross_origin()
 def get_hub():
-    hubId = request.args.get('id')
-    hub = hubs.find_one({'_id': ObjectId(hubId)})
+    hub_id = request.args.get('id')
+    hub = hubs.find_one({'_id': ObjectId(hub_id)})
     return parse_json(hub), 200
 
 @hub_bp.route('/hub', methods=['POST'])
@@ -101,16 +101,16 @@ def create_hub():
 @hub_bp.route('/hub', methods=['PUT'])
 @cross_origin()
 def update_hub():
-    hubId = request.args.get('id')
+    hub_id = request.args.get('id')
     data = request.json
-    result = hubs.update_one({'_id': ObjectId(hubId)}, {'$set': data})
+    result = hubs.update_one({'_id': ObjectId(hub_id)}, {'$set': data})
     return parse_json({'matched_count': result.matched_count, 'modified_count': result.modified_count}), 200
 
 @hub_bp.route('/hub', methods=['DELETE'])
 @cross_origin()
 def delete_hub():
-    hubId = request.args.get('id')
-    result = hubs.delete_one({'_id': ObjectId(hubId)})
+    hub_id = request.args.get('id')
+    result = hubs.delete_one({'_id': ObjectId(hub_id)})
     return parse_json({'deleted_count': result.deleted_count}), 200
 
 # Get the nearest hub by current address
@@ -148,6 +148,32 @@ def get_hub_by_row_num():
 
     res = list(
             hubs.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
+
+# Search hub and display from number rows
+@hub_bp.route('/hub/search', methods=['GET'])
+@cross_origin()
+def search_hub_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"name": {"$regex": search_str, "$options": "i"}},
+                    {"address": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+        
+    res = list(
+            hubs.find(query)
             .skip(number_row)
             .limit(limit)
         )
