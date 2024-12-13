@@ -88,3 +88,18 @@ def delete_staff():
     staffId = request.args.get('id')
     result = staffs.delete_one({'_id': ObjectId(staffId)})
     return parse_json({'deleted_count': result.deleted_count}), 200
+
+#  Get staff by number rows
+@staff_bp.route('/staff/row', methods=['GET'])
+@cross_origin()
+def get_staff_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            staffs.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200

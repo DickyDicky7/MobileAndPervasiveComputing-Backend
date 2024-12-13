@@ -64,3 +64,18 @@ def get_hub():
     user_id = request.args.get('id')
     user = users.find_one({'_id': ObjectId(user_id)})
     return parse_json(user), 200
+
+#  Get users by number rows
+@user_bp.route('/user/row', methods=['GET'])
+@cross_origin()
+def get_user_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            users.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
