@@ -138,3 +138,18 @@ def get_nearest_hub():
             minHub = ihub
 
     return parse_json(minHub), 200
+
+# Get hub by number rows
+@hub_bp.route('/hub/row', methods=['GET'])
+@cross_origin()
+def get_hub_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            hubs.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200

@@ -152,3 +152,18 @@ def update_pay_status():
         return parse_json({"message": "Pay status updated successfully"}), 200
     except Exception as e:
         return parse_json({"error": str(e)}), 500
+
+#  Get order by number rows
+@order_bp.route('/order/row', methods=['GET'])
+@cross_origin()
+def get_order_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            orders.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200

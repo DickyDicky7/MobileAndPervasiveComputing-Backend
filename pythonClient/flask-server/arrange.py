@@ -337,3 +337,18 @@ def get_deliveries_by_staffId():
     for order in delivery_list:
         order_list.append(order)
     return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
+
+#  Get deliveries by number rows
+@arrange_bp.route('/delivery/row', methods=['GET'])
+@cross_origin()
+def get_deliveries_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            deliveries.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
