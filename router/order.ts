@@ -166,6 +166,7 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
         }
               order.deliveryInfo.status = devStatus;
         await order.save( ) ;
+        return res.status(200).json({ order: order });
     } catch (err) {
         next(err);
     }
