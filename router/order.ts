@@ -133,6 +133,44 @@ router.put("/order/payStatus", async (req: express.Request, res: express.Respons
     }
 });
 
+router.put("/order/devStatus", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const          {
+             orderId
+        ,    devStatus
+//      ,    payStatus
+                       } = req.body;
+
+        if (!orderId  ) {
+            return res.status(400).json({ msg: "bad request - orderId   is required" });
+        }
+
+        if (!devStatus) {
+            return res.status(400).json({ msg: "bad request - devStatus is required" });
+        }
+
+//      if (!payStatus) {
+//          return res.status(400).json({ msg: "bad request - payStatus is required" });
+//      }
+
+        const order =  await Order.findById(new mongoose.Types.ObjectId(orderId));
+        if ( !order ) {
+            return res.status(400).json({ msg: "your order not found" });
+        }
+        if (order.payWith   === "cash"
+        &&  order.payStatus === "pending") {
+            order.payStatus =   "success";
+        } else {
+            order.payStatus =
+            order.payStatus ;
+        }
+              order.deliveryInfo.status = devStatus;
+        await order.save( ) ;
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
 
 
