@@ -137,7 +137,7 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
     try {
         const          {
              orderId
-        ,    devStatus
+//      ,    devStatus
 //      ,    payStatus
                        } = req.body;
 
@@ -145,9 +145,9 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
             return res.status(400).json({ msg: "bad request - orderId   is required" });
         }
 
-        if (!devStatus) {
-            return res.status(400).json({ msg: "bad request - devStatus is required" });
-        }
+//      if (!devStatus) {
+//          return res.status(400).json({ msg: "bad request - devStatus is required" });
+//      }
 
 //      if (!payStatus) {
 //          return res.status(400).json({ msg: "bad request - payStatus is required" });
@@ -164,8 +164,18 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
             order.payStatus =
             order.payStatus ;
         }
-              order.deliveryInfo.status = devStatus;
-        await order.save( ) ;
+        if (order.deliveryInfo.status === "pending") {
+            order.deliveryInfo.status = 
+                  "inProgress";
+        } else
+        if (order.deliveryInfo.status ===
+                              "failed"             ) {
+            order.deliveryInfo.status =               "canceled";
+        } else {
+            order.deliveryInfo.status = 
+            order.deliveryInfo.status ;
+        }
+        await order.save();
         return res.status(200).json({ order: order });
     } catch (err) {
         next(err);
