@@ -45,11 +45,6 @@ router.get('notifications/orderId', async (req: express.Request, res: express.Re
         const {orderId} = req.body;
         try{
             const notifications = await Notification.find({orderId: orderId});
-            if (!notifications || notifications.length === 0){
-                return res.status(404).json({
-                    "message": `No notifications are found with orderId ${orderId}.`
-                })
-            }
             return res.status(200).json({
                 "message": "Notifcations found!",
                 "data": notifications,
@@ -71,11 +66,6 @@ router.get('notifications/senderId', async (req: express.Request, res: express.R
         const {senderId} = req.body;
         try{
             const notifications = await Notification.find({senderId: senderId});
-            if (!notifications || notifications.length === 0){
-                return res.status(404).json({
-                    "message": `No notifications are found with senderId ${senderId}.`
-                })
-            }
             return res.status(200).json({
                 "message": "Notifcations found!",
                 "data": notifications,
@@ -97,11 +87,6 @@ router.get('notifications/receiverId', async (req: express.Request, res: express
         const {receiverId} = req.body;
         try{
             const notifications = await Notification.find({receiverId: receiverId});
-            if (!notifications || notifications.length === 0){
-                return res.status(404).json({
-                    "message": `No notifications are found with senderId ${receiverId}.`
-                })
-            }
             return res.status(200).json({
                 "message": "Notifcations found!",
                 "data": notifications,
