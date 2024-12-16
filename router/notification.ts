@@ -5,102 +5,104 @@ import Notification from "../mongoose_schemas/notification";
 
 const router = express.Router();
 
-router.post('/notification', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.post("/notification", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const {
-            orderId,
-            senderId,
+               orderId,
+              senderId,
             receiverId,
-            date,
-            about,
+            date  ,
+             about,
             status,
         } = req.body;
         try {
             const newNotification = new Notification({
-                orderId: orderId, 
-                senderId: senderId, 
+                   orderId:    orderId, 
+                  senderId:   senderId, 
                 receiverId: receiverId, 
-                date: date, 
-                about: about, 
-                status: status
+                date  : date  , 
+                 about:  about, 
+                status: status,
             });
-            await newNotification.save();
+            await  newNotification.save();
             return res.status(200).json({
-                "message": "Notification created successfully"
-            })
+                "message": "Notification create success",
+            });
         }
-        catch(error){
+        catch (error) {
             return res.status(500).json({
-                "message": "Failed to create notification",
-                "error": error,
-            })
+                "message": "Notification create failure", "error": error,
+            });
         }
     }
-    catch(error) {
-        next(error);
+    catch (error) {
+      next(error) ;
     }
 })
-router.get('notifications/orderId', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try{
-        const {orderId} = req.body;
+
+router.get("notifications/orderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const { orderId } =
+        req.body          ;
         try{
-            const notifications = await Notification.find({orderId: orderId});
+            const notifications = await Notification.find({orderId: new mongoose.Types.ObjectId(orderId)});
             return res.status(200).json({
-                "message": "Notifcations found!",
-                "data": notifications,
-            })
+                "message": "Notifications found success",
+        "data":             notifications               ,
+            });
         }
-        catch (error){
+        catch (error) {
             return res.status(500).json({
-                "message": "Failed to get notifications",
-                "error": error,
-            })
+                "message": "Notifications found failure", "error": error,
+            });
         }
     }
-    catch(error){
-        next(error);
+    catch (error) {
+      next(error) ;
     }
 })
-router.get('notifications/senderId', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try{
-        const {senderId} = req.body;
-        try{
-            const notifications = await Notification.find({senderId: senderId});
+
+router.get("notifications/senderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const { senderId } =
+        req.body           ;
+        try {
+            const notifications = await Notification.find({senderId: new mongoose.Types.ObjectId(senderId)});
             return res.status(200).json({
-                "message": "Notifcations found!",
-                "data": notifications,
-            })
+                "message": "Notifications found success",
+        "data":             notifications               ,
+            });
         }
-        catch (error){
+        catch (error) {
             return res.status(500).json({
-                "message": "Failed to get notifications",
-                "error": error,
-            })
+                "message": "Notifications found failure", "error": error,
+            });
         }
     }
-    catch(error){
-        next(error);
+    catch (error) {
+      next(error) ;
     }
 })
-router.get('notifications/receiverId', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try{
-        const {receiverId} = req.body;
-        try{
-            const notifications = await Notification.find({receiverId: receiverId});
+
+router.get("notifications/receiverId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const { receiverId } =
+        req.body             ;
+        try {
+            const notifications = await Notification.find({receiverId: new mongoose.Types.ObjectId(receiverId)});
             return res.status(200).json({
-                "message": "Notifcations found!",
-                "data": notifications,
-            })
+                "message": "Notifications found success",
+        "data":             notifications               ,
+            });
         }
-        catch (error){
+        catch (error) {
             return res.status(500).json({
-                "message": "Failed to get notifications",
-                "error": error,
-            })
+                "message": "Notifications found failure", "error": error,
+            });
         }
     }
-    catch(error){
-        next(error);
+    catch (error) {
+      next(error) ;
     }
 })
 
