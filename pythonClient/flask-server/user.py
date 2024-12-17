@@ -110,7 +110,7 @@ def search_user_by_row_num():
 @cross_origin()
 def count_user():
     res = users.count_documents({})
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200
 
 # Count hub and display from number rows
 @user_bp.route('/user/search/count', methods=['GET'])
@@ -135,4 +135,4 @@ def count_user_by_row_num():
             .limit(limit)
         ).count()
 
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200

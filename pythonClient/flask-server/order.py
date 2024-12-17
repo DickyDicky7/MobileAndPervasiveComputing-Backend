@@ -198,7 +198,7 @@ def search_order_by_row_num():
 @cross_origin()
 def count_order():
     res = orders.count_documents({})
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200
 
 # Count hub and display from number rows
 @order_bp.route('/order/search/count', methods=['GET'])
@@ -223,4 +223,4 @@ def count_order_by_row_num():
             .limit(limit)
         ).count()
 
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200
