@@ -383,7 +383,7 @@ def search_delivery_by_row_num():
 @cross_origin()
 def count_hub():
     res = deliveries.count_documents({})
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200
 
 # Count hub and display from number rows
 @arrange_bp.route('/delivery/search/count', methods=['GET'])
@@ -408,4 +408,4 @@ def count_delivery_by_row_num():
             .limit(limit)
         ).count()
 
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200

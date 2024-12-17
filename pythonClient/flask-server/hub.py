@@ -110,8 +110,34 @@ def update_hub():
 @cross_origin()
 def delete_hub():
     hub_id = request.args.get('id')
-    result = hubs.delete_one({'_id': ObjectId(hub_id)})
-    return parse_json({'deleted_count': result.deleted_count}), 200
+    if not ObjectId.is_valid(hub_id):
+        return jsonify({"error": "Invalid hub ID"}), 400
+
+    hub_object_id = ObjectId(hub_id)
+
+    # Check if there are any staff linked to the hub
+    staff_count = staffs.count_documents({"hubId": hub_object_id})
+    if staff_count > 0:
+        return jsonify({
+            "error": "Cannot delete hub. Staff are linked to this hub.",
+            "status": "failed",
+        }), 400
+
+    # Check if there are any orders linked to the hub
+    order_count = orders.count_documents({"hubId": hub_object_id})
+    if order_count > 0:
+        return jsonify({
+            "error": "Cannot delete hub. Orders are linked to this hub.",
+            "status": "failed",
+        }), 400
+
+    # If no links exist, delete the hub
+    result = hubs.delete_one({"_id": hub_object_id})
+    if result.deleted_count == 1:
+        return jsonify({"message": "Hub deleted successfully",
+                        "status":"success"}), 200
+    else:
+        return jsonify({"error": "Hub not found"}), 404
 
 # Get the nearest hub by current address
 
@@ -144,7 +170,7 @@ def get_nearest_hub():
 @cross_origin()
 def get_hub_by_row_num():
     number_row = request.args.get('numberRowIgnore', default=0, type=int)
-    limit = 8
+    limit = 5
 
     res = list(
             hubs.find()
@@ -154,13 +180,36 @@ def get_hub_by_row_num():
 
     return parse_json(res), 200
 
+# Search from all hub 
+@hub_bp.route('/hubs/search', methods=['GET'])
+@cross_origin()
+def search_from_all_hub():
+    search_str = request.args.get('search', default='', type=str)
+
+    query = {
+                "$or": 
+                [
+                    {"name": {"$regex": search_str, "$options": "i"}},
+                    {"address": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            hubs.find(query)
+        )
+
+    return parse_json(res), 200
+
+
 # Search hub and display from number rows
 @hub_bp.route('/hub/search', methods=['GET'])
 @cross_origin()
 def search_hub_by_row_num():
     search_str = request.args.get('search', default='', type=str)
     number_row = request.args.get('numberRowIgnore', default=0, type=int)
-    limit = 8
+    limit = 5
 
     query = {
                 "$or": 
@@ -185,7 +234,7 @@ def search_hub_by_row_num():
 @cross_origin()
 def count_hub():
     res = hubs.count_documents({})
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200
 
 # Count hub and display from number rows
 @hub_bp.route('/hub/search/count', methods=['GET'])
@@ -193,7 +242,7 @@ def count_hub():
 def count_hub_by_row_num():
     search_str = request.args.get('search', default='', type=str)
     number_row = request.args.get('numberRowIgnore', default=0, type=int)
-    limit = 8
+    limit = 5
 
     query = {
                 "$or": 
@@ -209,6 +258,6 @@ def count_hub_by_row_num():
             hubs.find(query)
             .skip(number_row)
             .limit(limit)
-        ).count()
+        ).count({})
 
-    return parse_json(res), 200
+    return jsonify({"count": res}), 200
