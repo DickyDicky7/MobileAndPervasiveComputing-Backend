@@ -53,8 +53,8 @@ router.post("/one-signal/send-push-notification", async (req: express.Request, r
             const result = await OneSignalSendPushNotificationTo
 //          ----------------------------------------------------
               ( userId ,  contentEn )  ;
-//          res.status(200).json(result.data);
-            res.status(200).json(result     );
+            res.status(200).json(result.data);
+//          res.status(200).json(result     );
         } else {
             res.status(400).json({ "msg": "Invalid request | reason: userId or contentEn is misssing" });
         }
