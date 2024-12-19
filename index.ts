@@ -12,6 +12,7 @@ import   a_iRoute from "./router/a.i"  ;
 import staffRoute from "./router/staff";
 import   assignRoute from "./router/assign"  ;
 import deliveryRoute from "./router/delivery";
+import   one_signalRoute from "./router/one.signal.s";
 import notificationRoute from "./router/notification";
 import passport  from "./passportJwt";
 import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
@@ -72,6 +73,7 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
   app.use("/protected", staffRoute);
   app.use("/protected",   assignRoute);
   app.use("/protected", deliveryRoute);
+  app.use("/protected",   one_signalRoute);
   app.use("/protected", notificationRoute);
 
   app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
