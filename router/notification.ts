@@ -40,7 +40,7 @@ router.post("/notification", async (req: express.Request, res: express.Response,
     }
 })
 
-router.get("notifications/orderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get("/notifications/orderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const     orderId:   string =
         req.query.orderId as string ;
@@ -62,7 +62,7 @@ router.get("notifications/orderId", async (req: express.Request, res: express.Re
     }
 })
 
-router.get("notifications/senderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get("/notifications/senderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const     senderId:   string =
         req.query.senderId as string ;
@@ -84,7 +84,7 @@ router.get("notifications/senderId", async (req: express.Request, res: express.R
     }
 })
 
-router.get("notifications/receiverId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get("/notifications/receiverId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const     receiverId:   string =
         req.query.receiverId as string ;
