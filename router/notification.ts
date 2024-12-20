@@ -40,10 +40,10 @@ router.post("/notification", async (req: express.Request, res: express.Response,
     }
 })
 
-router.get("notifications/orderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get("notifications/:orderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-        const { orderId } =
-        req.params          ;
+        const       orderId  =
+        req.params["orderId"];
         try{
             const notifications = await Notification.find({orderId: new mongoose.Types.ObjectId(orderId)});
             return res.status(200).json({
@@ -62,10 +62,10 @@ router.get("notifications/orderId", async (req: express.Request, res: express.Re
     }
 })
 
-router.get("notifications/senderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get("notifications/:senderId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-        const { senderId } =
-        req.params           ;
+        const       senderId =
+        req.params["senderId"];
         try {
             const notifications = await Notification.find({senderId: new mongoose.Types.ObjectId(senderId)});
             return res.status(200).json({
@@ -84,10 +84,10 @@ router.get("notifications/senderId", async (req: express.Request, res: express.R
     }
 })
 
-router.get("notifications/receiverId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get("notifications/:receiverId", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-        const { receiverId } =
-        req.params             ;
+        const       receiverId =
+        req.params["receiverId"];
         try {
             const notifications = await Notification.find({receiverId: new mongoose.Types.ObjectId(receiverId)});
             return res.status(200).json({
