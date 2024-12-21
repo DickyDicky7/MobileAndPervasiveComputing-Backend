@@ -152,3 +152,75 @@ def update_pay_status():
         return parse_json({"message": "Pay status updated successfully"}), 200
     except Exception as e:
         return parse_json({"error": str(e)}), 500
+
+#  Get order by number rows
+@order_bp.route('/order/row', methods=['GET'])
+@cross_origin()
+def get_order_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            orders.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
+
+# Search hub and display from number rows
+@order_bp.route('/order/search', methods=['GET'])
+@cross_origin()
+def search_order_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"_id": {"$regex": search_str, "$options": "i"}}
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})    
+
+    res = list(
+            orders.find(query)
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
+
+# Count all hub
+@order_bp.route('/orders/count', methods=['GET'])
+@cross_origin()
+def count_order():
+    res = orders.count_documents({})
+    return jsonify({"count": res}), 200
+
+# Count hub and display from number rows
+@order_bp.route('/order/search/count', methods=['GET'])
+@cross_origin()
+def count_order_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"_id": {"$regex": search_str, "$options": "i"}}
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})    
+
+    res = list(
+            orders.find(query)
+            .skip(number_row)
+            .limit(limit)
+        ).count()
+
+    return jsonify({"count": res}), 200
