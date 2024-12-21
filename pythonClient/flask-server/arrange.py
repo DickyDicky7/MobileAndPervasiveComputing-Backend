@@ -337,3 +337,75 @@ def get_deliveries_by_staffId():
     for order in delivery_list:
         order_list.append(order)
     return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
+
+#  Get deliveries by number rows
+@arrange_bp.route('/delivery/row', methods=['GET'])
+@cross_origin()
+def get_deliveries_by_row_num():
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    res = list(
+            deliveries.find()
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
+
+# Search user and display from number rows
+@arrange_bp.route('/delivery/search', methods=['GET'])
+@cross_origin()
+def search_delivery_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"status": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            deliveries.find(query)
+            .skip(number_row)
+            .limit(limit)
+        )
+
+    return parse_json(res), 200
+
+# Count all hub
+@arrange_bp.route('/deliveries/count', methods=['GET'])
+@cross_origin()
+def count_hub():
+    res = deliveries.count_documents({})
+    return jsonify({"count": res}), 200
+
+# Count hub and display from number rows
+@arrange_bp.route('/delivery/search/count', methods=['GET'])
+@cross_origin()
+def count_delivery_by_row_num():
+    search_str = request.args.get('search', default='', type=str)
+    number_row = request.args.get('numberRowIgnore', default=0, type=int)
+    limit = 8
+
+    query = {
+                "$or": 
+                [
+                    {"status": {"$regex": search_str, "$options": "i"}},
+                ]
+            }
+    if ObjectId.is_valid(search_str):
+        query["$or"].append({"_id": ObjectId(search_str)})
+
+    res = list(
+            deliveries.find(query)
+            .skip(number_row)
+            .limit(limit)
+        ).count()
+
+    return jsonify({"count": res}), 200

@@ -40,10 +40,6 @@ model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
 # os.environ["COHERE_API_KEY"] = 's1v4UzmYNozCzM6gX5NGQmK4Ld1kLTjlB3MphF8t'
 
 def chat_bot(prompt):
-    # response = co.chat(
-    #     message=prompt
-    # )
-    # return str(response.text)
     completion = client.chat.completions.create(
         model="liquid/lfm-40b:free",
         messages=[
