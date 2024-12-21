@@ -182,6 +182,42 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
     }
 });
 
+router.get("/order/row", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/order/row?numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/order/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/order/search?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/orders/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/orders/count`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/order/search/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/order/search/count?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
 
 

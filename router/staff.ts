@@ -58,4 +58,40 @@ router.post("/get-staff-by-user-id", async (req: express.Request, res: express.R
     }
 });
 
+router.get("/staff/row", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/staff/row?numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/staff/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/staff/search?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/staffs/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/staffs/count`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/staff/search/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/staff/search/count?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;

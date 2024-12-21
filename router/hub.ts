@@ -57,4 +57,49 @@ router.get("/hub/near", async (req: express.Request, res: express.Response, next
     }
 });
 
+router.get("/hub/row", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/hub/row?numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/hubs/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/hubs/search?search=${req.query.search}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/hub/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/hub/search?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/hubs/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/hubs/count`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/hub/search/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/hub/search/count?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;

@@ -49,4 +49,40 @@ router.get("/deliveries/staff", async (req: express.Request, res: express.Respon
     }
 });
 
+router.get("/delivery/row", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/delivery/row?numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/delivery/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/delivery/search?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/deliveries/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/deliveries/count`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/delivery/search/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/delivery/search/count?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
