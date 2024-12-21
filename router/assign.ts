@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/assign", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.post("http://pythonserver:27018/assign", req.body);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }

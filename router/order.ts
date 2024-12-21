@@ -55,7 +55,7 @@ router.post("/confirmation", async (req: express.Request, res: express.Response,
 router.get   ("/orders", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get   ("http://pythonserver:27018/orders");
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -64,7 +64,7 @@ router.get   ("/orders", async (req: express.Request, res: express.Response, nex
 router.get   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get   (`http://pythonserver:27018/order?id=${req.query.id}`);
-        res.json(response.data);    
+        res.status(response.status).json(response.data);    
     } catch (err) {
         next(err);
     }
@@ -73,7 +73,7 @@ router.get   ("/order", async (req: express.Request, res: express.Response, next
 router.post  ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.post  ("http://pythonserver:27018/order"                  , req.body);
-        res.json(response.data);    
+        res.status(response.status).json(response.data);    
     } catch (err) {
         next(err);
     }
@@ -82,7 +82,7 @@ router.post  ("/order", async (req: express.Request, res: express.Response, next
 router.put   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.put   (`http://pythonserver:27018/order?id=${req.query.id}`, req.body);
-        res.json(response.data);    
+        res.status(response.status).json(response.data);    
     } catch (err) {
         next(err);
     }
@@ -91,7 +91,7 @@ router.put   ("/order", async (req: express.Request, res: express.Response, next
 router.delete("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.delete(`http://pythonserver:27018/order?id=${req.query.id}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -100,7 +100,7 @@ router.delete("/order", async (req: express.Request, res: express.Response, next
 router.get("/orders/sender", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/orders/sender?userId=${req.query.userId}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -109,7 +109,7 @@ router.get("/orders/sender", async (req: express.Request, res: express.Response,
 router.get("/orders/receiver", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/orders/receiver?userId=${req.query.userId}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -118,7 +118,7 @@ router.get("/orders/receiver", async (req: express.Request, res: express.Respons
 router.get("/orders/hub", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/orders/hub?hubId=${req.query.hubId}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -127,7 +127,7 @@ router.get("/orders/hub", async (req: express.Request, res: express.Response, ne
 router.put("/order/payStatus", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.put(`http://pythonserver:27018/order/payStatus?id=${req.query.id}&payStatus=${req.query.payStatus}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -185,7 +185,7 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
 router.get("/order/row", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/order/row?numberRowIgnore=${req.query.numberRowIgnore}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -194,7 +194,7 @@ router.get("/order/row", async (req: express.Request, res: express.Response, nex
 router.get("/order/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/order/search?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -203,7 +203,7 @@ router.get("/order/search", async (req: express.Request, res: express.Response, 
 router.get("/orders/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/orders/count`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
@@ -212,7 +212,7 @@ router.get("/orders/count", async (req: express.Request, res: express.Response, 
 router.get("/order/search/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const response = await axios.get(`http://pythonserver:27018/order/search/count?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
-        res.json(response.data);
+        res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
     }
