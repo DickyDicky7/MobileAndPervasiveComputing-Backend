@@ -52,10 +52,13 @@ app.use(async (req: express.Request, res: express.Response, next: express.NextFu
                 const  originalSend = res.send.bind(res );
                                       res.send =   (body) => {
                 const    statusCode = res.    statusCode ;
+                const             cachedDuration :number  = !isNaN(parseInt(req.query.cachedDuration as string))
+                                                          ?        parseInt(req.query.cachedDuration as string)
+                                                          :  60;
                 redisClient.set(  cachedKey
                            , JSON.stringify({ statusCode
                            , body           })
-                           , { EX: 120 });
+                           , { EX:cachedDuration });
 
                 return originalSend(body);
                 };
