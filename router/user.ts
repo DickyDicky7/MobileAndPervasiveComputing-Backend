@@ -50,4 +50,49 @@ router.delete("/user", async (req: express.Request, res: express.Response, next:
     }
 });
 
+router.get("/user/row", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/user/row?numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/users/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/users/search?search=${req.query.search}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/user/search", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/user/search?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/users/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/users/count`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/user/search/count", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const response = await axios.get(`http://pythonserver:27018/user/search/count?search=${req.query.search}&numberRowIgnore=${req.query.numberRowIgnore}`);
+        res.json(response.data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 export default router;
