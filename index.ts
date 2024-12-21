@@ -5,12 +5,15 @@ import redisClient from "./redisClient";
 import mongoClient from "./mongoClient";
 import  authRoute from "./router/auth" ;
 import  userRoute from "./router/user" ;
+import  momoRoute from "./router/momo" ;
 import orderRoute from "./router/order";
 import   hubRoute from "./router/hub"  ;
 import   a_iRoute from "./router/a.i"  ;
 import staffRoute from "./router/staff";
 import   assignRoute from "./router/assign"  ;
 import deliveryRoute from "./router/delivery";
+import   one_signalRoute from "./router/one.signal.s";
+import notificationRoute from "./router/notification";
 import passport  from "./passportJwt";
 import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
 import { getOrdersByUserIdAndStatus
@@ -63,12 +66,15 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
     next) ;
   });
   app.use("/protected",  userRoute);
+  app.use("/protected",  momoRoute);
   app.use("/protected", orderRoute);
   app.use("/protected",   hubRoute);
   app.use("/protected",   a_iRoute);
   app.use("/protected", staffRoute);
   app.use("/protected",   assignRoute);
   app.use("/protected", deliveryRoute);
+  app.use("/protected",   one_signalRoute);
+  app.use("/protected", notificationRoute);
 
   app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.json({ "msg": "Hello 1" });
