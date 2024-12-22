@@ -76,7 +76,7 @@ const order: mongoose.Schema<IOrder> = new mongoose.Schema({
     message  : { type: String, required: true  },
     podTxt   : { type: String, required: false },
     podImg   : { type: String, required: false },
-    payStatus: { type: String, required: true  }, // pending | success | cancel
+    payStatus: { type: String, required: true  }, // pending | success | canceled
     payWith  : { type: String, required: true  }, // momo    | cash    | wallet
 });
 
