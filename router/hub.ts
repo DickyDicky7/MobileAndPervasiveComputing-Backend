@@ -50,7 +50,7 @@ router.delete("/hub", async (req: express.Request, res: express.Response, next: 
 
 router.get("/hub/near", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-        const response = await axios.delete(`http://pythonserver:27018/hub/near?address=${req.query.address}`);
+        const response = await axios.get(`http://pythonserver:27018/hub/near?address=${req.query.address}`);
         res.status(response.status).json(response.data);
     } catch (err) {
         next(err);
