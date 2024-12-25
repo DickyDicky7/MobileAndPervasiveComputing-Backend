@@ -166,7 +166,7 @@ def create_data_model(orders, staff, hub):
     data = {}
     hub_lat, hub_lon = geocode_address(hub['address'])
     data['distance_matrix'] = []
-    all_locations = [(hub_lat, hub_lon)] + [geocode_address(order['deliveryAddress']) for order in orders]
+    all_locations = [(hub_lat, hub_lon)] + [geocode_address(order['receiverInfo']['address']) for order in orders]
     for loc1 in all_locations:
         distances = []
         for loc2 in all_locations:
@@ -251,9 +251,9 @@ def assign_delivery_tasks():
         for idx in  route[1:]:
             order      = orders_pending[idx - 1]
             assignment = {
-                'staffId': str(staff_member['_id']),
-                'orderId': str(       order['_id']),
-                  'hubId': str(hub_id             ),
+                'staffId': ObjectId(str(staff_member['_id'])),
+                'orderId': ObjectId(str(       order['_id'])),
+                  'hubId': ObjectId(str(hub_id             )),
                 'date' : datetime.today().strftime("%d-%m-%Y"),
                 'deliverTimes':         0,
                       'status': 'pending',
@@ -261,7 +261,7 @@ def assign_delivery_tasks():
             deliveries .insert_one(assignment)
             assignments.append    (assignment)
 
-            # orders.update_one({'_id': order['_id']}, {'$set': {'deliveryInfo.status': 'inProgress'}})
+            orders.update_one({'_id': order['_id']}, {'$set': {'deliveryInfo.status': 'inProgress'}})
 
     return jsonify(parse_json(assignments)), 200
 

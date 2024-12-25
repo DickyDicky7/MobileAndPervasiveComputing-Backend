@@ -1,0 +1,6 @@
+POST http://localhost:27018/assign
+Content-Type: application/json
+
+{
+    "hubId": "674029cf645dd52ef0779472"
+}
