@@ -288,6 +288,9 @@ def update_delivery_status():
             orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'failed'}})
         else:
             deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'deliverTimes': deliver_times}})
+    else:
+        deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': status}})
+#       orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': status}})
 
     return jsonify({'status': 'updated', 'deliverTimes': deliver_times}), 200
 
@@ -300,7 +303,7 @@ def get_delivery_by_id():
     if not delivery_id:
         return jsonify({"error": "delivery_id parameter is required"}), 400
     
-    deliveries_list = deliveries.find({"_id": delivery_id})
+    deliveries_list = deliveries.find({"_id": ObjectId(delivery_id)})
     return parse_json(deliveries_list), 200
 
 ## Get all delivery
@@ -318,7 +321,7 @@ def get_deliveries_by_hubId():
     if not hub_id:
         return jsonify({"error": "hub_id parameter is required"}), 400
     
-    delivery_list = deliveries.find({"hubId": (hub_id)})
+    delivery_list = deliveries.find({"hubId": ObjectId(hub_id)})
     order_list = []
     for order in delivery_list:
         order_list.append(order)
@@ -332,7 +335,7 @@ def get_deliveries_by_staffId():
     if not staff_id:
         return jsonify({"error": "staff_id parameter is required"}), 400
     
-    delivery_list = deliveries.find({"staffId": (staff_id)})
+    delivery_list = deliveries.find({"staffId": ObjectId(staff_id)})
     order_list = []
     for order in delivery_list:
         order_list.append(order)

@@ -1,7 +1,25 @@
-import * as express from "express";
-import axios    from "axios";
-import mongoose from "mongoose";
-import Order, { ShipmentType, DeliveryType } from "../mongoose_schemas/order";
+import * as  express from
+            "express"   ;
+import axios         from
+      "axios"           ;
+import mongoose      from
+      "mongoose"        ;
+import Order, { ShipmentType
+            ,   DeliveryType } from "../mongoose_schemas/order";
+import               Delivery  from
+"../mongoose_schemas/delivery" ;
+import { OneSignalSendPushNotificationTo } from
+       /*OneSignalSendPushNotificationTo*/     "./one.signal.s"                   ;
+import                        Notification from "../mongoose_schemas/notification";
+
+    const getCurrentDate = (): string => {
+    const now   = new        Date();
+    const  year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, `0`); // Months are zero-based
+    const day   = String(now.getDate ()    ).padStart(2, `0`);
+    return `${year}-${month}-${day}`;
+    };
+
 
 const router = express.Router();
 
@@ -61,12 +79,38 @@ router.get   ("/orders", async (req: express.Request, res: express.Response, nex
     }
 });
 
+// router.get   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+//     try {
+//         const response = await axios.get   (`http://pythonserver:27018/order?id=${req.query.id}`);
+//         res.status(response.status).json(response.data);    
+//     } catch (err) {
+//         next(err);
+//     }
+// });
+
 router.get   ("/order", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try {
-        const response = await axios.get   (`http://pythonserver:27018/order?id=${req.query.id}`);
-        res.status(response.status).json(response.data);    
+    try           {
+        const{ id } =          req.
+        query                     ;
+        if   (!id )
+            return res.status(400).json({ msg: "order id not found" });
+        else
+            return res.status(200).json(await   Order .findById(new mongoose.Types.ObjectId(id as string)));
     } catch (err) {
-        next(err);
+        next(err) ;
+    }
+});
+
+router.get   ("/deliv", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try           {
+        const{ id } =          req.
+        query                     ;
+        if   (!id )
+            return res.status(400).json({ msg: "deliv id not found" });
+        else
+            return res.status(200).json(await Delivery.findById(new mongoose.Types.ObjectId(id as string)));
+    } catch (err) {
+        next(err) ;
     }
 });
 
@@ -160,6 +204,22 @@ router.put("/order/devStatus", async (req: express.Request, res: express.Respons
         if (order.payWith   === "cash"
         &&  order.payStatus === "pending") {
             order.payStatus =   "success";
+
+            const newNotification = new Notification({
+                   orderId: order.                _id, 
+                  senderId: order.  senderInfo.userId, 
+                receiverId: order.receiverInfo.userId, 
+                date  : getCurrentDate(), 
+                 about: "payment"       , 
+                status: "success"       ,
+            });
+            await newNotification.save();
+
+            await OneSignalSendPushNotificationTo(order.senderInfo.userId, `Order ${order._id} has a new payment update: the order has been paid successfully`
+                                                                         , `Order ${order._id} has a new payment update: the order has been paid successfully`
+                                                                         , `Order ${order._id} has a new payment update: the order has been paid successfully`
+                                                                        );
+
         } else {
             order.payStatus =
             order.payStatus ;
