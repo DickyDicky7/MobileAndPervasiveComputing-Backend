@@ -1,6 +1,7 @@
 import * as express from "express";
-import axios from "axios";
-import mongoose from "mongoose";
+import axios        from   "axios";
+import mongoose from     "mongoose"                 ;
+import Delivery from  "../mongoose_schemas/delivery";
 
 const router = express.Router();
 
@@ -84,5 +85,19 @@ router.get("/delivery/search/count", async (req: express.Request, res: express.R
         next(err);
     }
 });
+
+router.get("/delivery/skibidiskirt", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const { staffId } = req.query;
+        if    (!staffId )
+            return res.status(400).json({ msg_: "fuck" });
+        else
+            return res.status(200).json({ list: await Delivery.find({ staffId: new mongoose.Types.ObjectId(staffId as string) }) });
+    } catch (err) {
+        next(err);
+    }
+});
+
+
 
 export default router;

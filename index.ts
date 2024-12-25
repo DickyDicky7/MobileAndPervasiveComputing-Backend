@@ -38,40 +38,40 @@ app.use(bodyParser.json({ limit:  "100mb" }));
 const       morgan = require(     "morgan");
 app.use(    morgan("tiny")                );
 
-app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try           {
-        if (redisClient.isReady) {
-            const cachedKey: string = `cache:${req.path}:${JSON.stringify(req.params)}:${JSON.stringify(req.query)}:${JSON.stringify(req.body)}`;
-            const cachedVal: string =  await redisClient.get(
-                  cachedKey                                 );
-            if (  cachedVal  ) {
-                const            {statusCode ,     body} = JSON.parse(cachedVal);
-                return res.status(statusCode).json(JSON.parse(
-                                                   body      )                 );
-            } else             {
-                const  originalSend = res.send.bind(res );
-                                      res.send =   (body) => {
-                const    statusCode = res.    statusCode ;
-                const             cachedDuration :number  = !isNaN(parseInt(req.query.cachedDuration as string))
-                                                          ?        parseInt(req.query.cachedDuration as string)
-                                                          :  60;
-                redisClient.set(  cachedKey
-                           , JSON.stringify({ statusCode
-                           , body           })
-                           , { EX:cachedDuration });
+// app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+//     try           {
+//         if (redisClient.isReady) {
+//             const cachedKey: string = `cache:${req.path}:${JSON.stringify(req.params)}:${JSON.stringify(req.query)}:${JSON.stringify(req.body)}`;
+//             const cachedVal: string =  await redisClient.get(
+//                   cachedKey                                 );
+//             if (  cachedVal  ) {
+//                 const            {statusCode ,     body} = JSON.parse(cachedVal);
+//                 return res.status(statusCode).json(JSON.parse(
+//                                                    body      )                 );
+//             } else             {
+//                 const  originalSend = res.send.bind(res );
+//                                       res.send =   (body) => {
+//                 const    statusCode = res.    statusCode ;
+//                 const             cachedDuration :number  = !isNaN(parseInt(req.query.cachedDuration as string))
+//                                                           ?        parseInt(req.query.cachedDuration as string)
+//                                                           :  60;
+//                 redisClient.set(  cachedKey
+//                            , JSON.stringify({ statusCode
+//                            , body           })
+//                            , { EX:cachedDuration });
 
-                return originalSend(body);
-                };
-                next();
-            }
-        } else                   {
-        next();
-        }
-    } catch          (err) {
-        console.error(err) ;
-        return               res.status(500).json({ "msg": err });
-    }
-});
+//                 return originalSend(body);
+//                 };
+//                 next();
+//             }
+//         } else                   {
+//         next();
+//         }
+//     } catch          (err) {
+//         console.error(err) ;
+//         return               res.status(500).json({ "msg": err });
+//     }
+// });
 
 app.use( passport .initialize());
 app.use( ensureUserExists      );
