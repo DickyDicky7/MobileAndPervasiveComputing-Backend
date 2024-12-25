@@ -10,6 +10,7 @@ import json
 import requests  # type: ignore
 import os
 from flask_cors import CORS, cross_origin # type: ignore
+from arrange import parse_json
 
 staff_bp = Blueprint("staff",__name__)
 CORS(staff_bp)
@@ -27,27 +28,6 @@ hubs = db.hubs
 orders = db.orders
 staffs = db.staffs
 deliveries = db.deliveries
-
-# Helper function to parse JSON
-def parse_json(data):
-    data = json.loads(json_util.dumps(data))
-    if isinstance(data, list):
-        for item in data:
-            if 'hubId' in item:
-                if '$oid' in item.get('hubId', {}):
-                    item['hubId'] = str(item['hubId']["$oid"])
-            if '_id' in item:
-                item['_id'] = str(item['_id']["$oid"])
-            if 'insertedId' in item:
-                item['insertedId'] = str(item['insertedId']["$oid"])
-    else:
-        if 'hubId' in data:
-            data['hubId'] = str(data['hubId']["$oid"])
-        if '_id' in data:
-                data['_id'] = str(data['_id']["$oid"])
-        if 'insertedId' in data:
-                data['insertedId'] = str(data['insertedId']["$oid"])
-    return data
 
 # Staff Endpoints
 
