@@ -232,36 +232,36 @@ def solve_vrp(data):
 @cross_origin()
 def assign_delivery_tasks():
     hub_id = request.json['hubId']
-    hub = hubs.find_one({'_id': ObjectId(hub_id)})
-    orders_pending = list(orders.find({'hubId': ObjectId(hub_id), 'status': 'pending'}))
-    staff_members = list(staffs.find({'hubId': ObjectId(hub_id)}))
+    hub    =    hubs.find_one({'_id': ObjectId(hub_id)})
+    orders_pending = list(orders.find({'hubId': ObjectId(hub_id), 'deliveryInfo.status': 'pending'}))
+    staff_members  = list(staffs.find({'hubId': ObjectId(hub_id),                                 }))
 
     if not hub or not orders_pending or not staff_members:
-        return jsonify({'error': 'Invalid data'}), 400
+        return jsonify({'error': 'Step 1 wrong'}), 400
 
-    data = create_data_model(orders_pending, staff_members, hub)
+    data   = create_data_model(orders_pending, staff_members, hub)
     routes = solve_vrp(data)
 
     if not routes:
-        return jsonify({'error': 'No solution found'}), 400
+        return jsonify({'error': 'Step 2 wrong'}), 400
 
     assignments = []
     for vehicle_id, route in enumerate(routes):
         staff_member = staff_members[vehicle_id]
-        for idx in route[1:]:
-            order = orders_pending[idx - 1]
+        for idx in  route[1:]:
+            order      = orders_pending[idx - 1]
             assignment = {
                 'staffId': str(staff_member['_id']),
-                'orderId': str(order['_id']),
-                'hubId': str(hub_id),
-                'date': datetime.today().strftime("%d-%m-%Y"),
-                'deliverTimes': 0,
-                'status': 'pending'
+                'orderId': str(       order['_id']),
+                  'hubId': str(hub_id             ),
+                'date' : datetime.today().strftime("%d-%m-%Y"),
+                'deliverTimes':         0,
+                      'status': 'pending',
             }
-            deliveries.insert_one(assignment)
-            assignments.append(assignment)
+            deliveries .insert_one(assignment)
+            assignments.append    (assignment)
 
-            orders.update_one({'_id': order['_id']}, {'$set': {'status': 'inProgress'}})
+            # orders.update_one({'_id': order['_id']}, {'$set': {'deliveryInfo.status': 'inProgress'}})
 
     return jsonify(parse_json(assignments)), 200
 
@@ -271,21 +271,21 @@ def assign_delivery_tasks():
 @cross_origin()
 def update_delivery_status():
     delivery_id = request.json['deliveryId']
-    status = request.json['status']
-    delivery = deliveries.find_one({'_id': ObjectId(delivery_id)})
+    status      = request.json[  'status'  ]
+    delivery    = deliveries.find_one({'_id': ObjectId(delivery_id)})
 
     if not delivery:
         return jsonify({'error': 'delivery not found'}), 400
 
     deliver_times = delivery.get('deliverTimes', 0)
-    if status == 'success':
-        deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'success'}})
-        orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'success'}})
-    elif status == 'failed':
+    if   status == 'success'       :
+        deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': 'success'}})
+        orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'success'}})
+    elif status ==         'failed':
         deliver_times = delivery.get('deliverTimes', 0) + 1
         if deliver_times >= 3:
-            deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'failed'}})
-            orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'failed'}})
+            deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': 'failed'}})
+            orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'failed'}})
         else:
             deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'deliverTimes': deliver_times}})
 

@@ -217,22 +217,33 @@ router.get("/order/search/count", async (req: express.Request, res: express.Resp
         next(err);
     }
 });
+
 router.put("/order/updateDeliveryStatus", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try{
-        const {orderId, newStatus} = req.body;
-        const order =  await Order.findById(new mongoose.Types.ObjectId(orderId));
-        if ( !order ) {
-            return res.status(400).json({ msg: "your order not found" });
+    try {
+        const { orderId , newStatus } = req.body;
+        const   order   =
+        await   Order   . findById(new mongoose.Types.ObjectId(orderId));
+        if    (!order)  {
+        return    res.status(400) .json({ order: order });
         }
-        order.deliveryInfo.status = newStatus;
-        await order.save();
-        return res.status(200);
+                order.deliveryInfo.status =
+                                newStatus ;
+        await   order.            save(                );
+        return    res.status(200).json({ order: order });
     }
-    catch (err){
-        next(err);
+    catch (err) {
+      next(err) ;
     }
 });
 
 export default router;
+
+
+
+
+
+
+
+
 
 
