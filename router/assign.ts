@@ -8,9 +8,9 @@ const router = express.Router();
 
 router.post("/assign", async (req: express.Request, res: express.Response   , next: express.NextFunction) => {
     try {
-        const response = await axios.post("http://pythonserver:27018/assign",  req.body    );
+        const response = await axios.post("http://pythonserver:27018/assign",  req.body            );
               response .             data .forEach(async delivery => {
-        const    staff = await Staff.findById(new mongoose.Types.ObjectId(delivery.staffId));
+        const    staff = await Staff.findById(new mongoose.Types.ObjectId(delivery.staffId["$oid"]));
         await OneSignalSendPushNotificationTo(staff.userId, "New pickup delivery"
                                                           , "New pickup delivery"
                                                           , "New pickup delivery");
