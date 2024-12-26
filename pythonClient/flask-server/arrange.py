@@ -142,7 +142,7 @@ def solve_vrp(data):
     routing.AddDimension(
         transit_callback_index,
         0,  # không có khoảng trống
-        3000,  # khoảng cách tối đa của phương tiện
+        300000,  # khoảng cách tối đa của phương tiện
         True,  # bắt đầu từ số 0
         dimension_name)
     
@@ -254,23 +254,26 @@ def assign_delivery_tasks():
 @cross_origin()
 def update_delivery_status():
     delivery_id = request.json['deliveryId']
-    status = request.json['status']
-    delivery = deliveries.find_one({'_id': ObjectId(delivery_id)})
+    status      = request.json[  'status'  ]
+    delivery    = deliveries.find_one({'_id': ObjectId(delivery_id)})
 
     if not delivery:
         return jsonify({'error': 'delivery not found'}), 400
 
     deliver_times = delivery.get('deliverTimes', 0)
-    if status == 'success':
-        deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'success'}})
-        orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'success'}})
-    elif status == 'failed':
+    if   status == 'success'       :
+        deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': 'success'}})
+        orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'success'}})
+    elif status ==         'failed':
         deliver_times = delivery.get('deliverTimes', 0) + 1
         if deliver_times >= 3:
-            deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'failed'}})
-            orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'failed'}})
+            deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': 'failed'}})
+            orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'failed'}})
         else:
             deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'deliverTimes': deliver_times}})
+    else:
+        deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': status}})
+#       orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': status}})
 
     return jsonify({'status': 'updated', 'deliverTimes': deliver_times}), 200
 
