@@ -367,8 +367,12 @@ def count_order_status():
     if status not in valid_statuses:
         return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
 
+    query = {"deliveryInfo.status": status}
 
-    res = orders.count_documents({"deliveryInfo.status": status})
+    res = orders.count_documents(query)
+        
+
+    # res = orders.count_documents({"deliveryInfo.status": status})
     return jsonify({"count": res}), 200
 
 # Count hub and display from number rows
