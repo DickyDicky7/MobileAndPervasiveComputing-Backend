@@ -17,7 +17,8 @@ CORS(hub_bp)
 
 # Connect to MongoDB
 client = MongoClient(os.environ.get("MONGO_DB"))
-maps_key = os.environ.get("GOOGLE_MAP_API")
+maps_key      = os.environ.get("GOOGLE_MAP_API")
+geocoding_key = os.environ.get("GEO_CODING_API") 
 
 db = client.lift
 CORS(hub_bp)
@@ -30,15 +31,16 @@ staffs = db.staffs
 deliveries = db.deliveries
 
 def geocode_address(address):
-    url = f'https://geocode.maps.co/search?q='+address+'&api_key='+maps_key
+    url = f'https://api.opencagedata.com/geocode/v1/json?key='+geocoding_key+'&q='+address+'&pretty=1&language=native'
     response = requests.get(url)
-    if response.status_code == 200:
+    if         response.status_code == 200:
         # return response.json()
         result = parse_json(response.json())
-        if result:
-            location = result[0]
-            return location['lat'], location['lon']
-    return None, None
+        if             result:
+            location = result['results'][0]['geometry']
+            return   location[  'lat'  ] ,   location [  'lng'  ]
+    return None , None
+
 
 def get_hub_detail(hubs_list):
     result = []

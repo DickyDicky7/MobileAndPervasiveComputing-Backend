@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import * as express from "express";
+import     mongoose from "mongoose"        ;
+import * as express from          "express";
 
 export interface IStaff extends mongoose.Document {
     name              : string,

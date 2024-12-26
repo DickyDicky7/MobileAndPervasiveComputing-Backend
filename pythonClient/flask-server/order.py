@@ -124,7 +124,7 @@ def get_orders_by_sender_userid():
     if not user_id:
         return jsonify({"error": "userId parameter is required"}), 400
     
-    ordersSender = orders.find({"senderInfo.userId": user_id})
+    ordersSender = orders.find({"senderInfo.userId": ObjectId(user_id)})
     order_list = []
     for order in ordersSender:
         order_list.append(order)
@@ -140,7 +140,7 @@ def get_orders_by_receiver_userid():
     if not user_id:
         return jsonify({"error": "userId parameter is required"}), 400
     
-    orders_receiver = orders.find({"receiverInfo.userId": user_id})
+    orders_receiver = orders.find({"receiverInfo.userId": ObjectId(user_id)})
     order_list = []
     for order in orders_receiver:
         order_list.append(order)

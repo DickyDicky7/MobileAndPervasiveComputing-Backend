@@ -14,6 +14,8 @@ import   assignRoute from "./router/assign"  ;
 import deliveryRoute from "./router/delivery";
 import   one_signalRoute from "./router/one.signal.s";
 import notificationRoute from "./router/notification";
+import     coordinatorRoute from
+ "./router/coordinator"              ;
 import passport  from "./passportJwt";
 import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
 import { getOrdersByUserIdAndStatus
@@ -36,15 +38,50 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit:  "100mb" }));
 
 const       morgan = require(     "morgan");
-app.use(    morgan("tiny"));
+app.use(    morgan("tiny")                );
+
+// app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+//     try           {
+//         if (redisClient.isReady) {
+//             const cachedKey: string = `cache:${req.path}:${JSON.stringify(req.params)}:${JSON.stringify(req.query)}:${JSON.stringify(req.body)}`;
+//             const cachedVal: string =  await redisClient.get(
+//                   cachedKey                                 );
+//             if (  cachedVal  ) {
+//                 const            {statusCode ,     body} = JSON.parse(cachedVal);
+//                 return res.status(statusCode).json(JSON.parse(
+//                                                    body      )                 );
+//             } else             {
+//                 const  originalSend = res.send.bind(res );
+//                                       res.send =   (body) => {
+//                 const    statusCode = res.    statusCode ;
+//                 const             cachedDuration :number  = !isNaN(parseInt(req.query.cachedDuration as string))
+//                                                           ?        parseInt(req.query.cachedDuration as string)
+//                                                           :  60;
+//                 redisClient.set(  cachedKey
+//                            , JSON.stringify({ statusCode
+//                            , body           })
+//                            , { EX:cachedDuration });
+
+//                 return originalSend(body);
+//                 };
+//                 next();
+//             }
+//         } else                   {
+//         next();
+//         }
+//     } catch          (err) {
+//         console.error(err) ;
+//         return               res.status(500).json({ "msg": err });
+//     }
+// });
 
 app.use( passport .initialize());
-app.use( ensureUserExists );
-var hasInit = false;
+app.use( ensureUserExists      );
+// var    hasInit = false;
 // app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 //   if (!hasInit) {
-//     await axios.get("http://pythonserver:27018/init");
-//     hasInit = true;
+//         await axios.get("http://pythonserver:27018/init");
+//        hasInit = true ;
 //   }
 //   next();
 // });
@@ -75,6 +112,7 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
   app.use("/protected", deliveryRoute);
   app.use("/protected",   one_signalRoute);
   app.use("/protected", notificationRoute);
+  app.use("/protected",  coordinatorRoute);
 
   app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.json({ "msg": "Hello 1" });
@@ -106,53 +144,53 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
       // import axios from "axios";
       app.get("/health", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const response = await axios.get("http://pythonserver:27018/health");
-        res.json(response.data);
+        res.status(response.status).json(response.data);
       });
       
       // app.get ("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         //   const response = await axios.get ("http://pythonserver:27018/classify-image");
-//   res.json(response.data);
+//   res.status(response.status).json(response.data);
 // });
 
 // app.post("/protected/classify-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   //   const response = await axios.post("http://pythonserver:27018/classify-image", {
     //     image_url : req.body.image_url
     //   });
-    //   res.json(response.data);
+    //   res.status(response.status).json(response.data);
     // });
     
     // app.get ("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
       //   const response = await axios.get ("http://pythonserver:27018/chat");
-      //   res.json(response.data);
+      //   res.status(response.status).json(response.data);
       // });
       
       // app.post("/protected/chat", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         //   const response = await axios.post(`http://pythonserver:27018/chat?prompt=${req.query.prompt}`);
-//   res.json(response.data);
+//   res.status(response.status).json(response.data);
 // });
 
 // app.get ("/protected/recommendation", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 //   const response = await axios.get ("http://pythonserver:27018/recommendation");
-//   res.json(response.data);
+//   res.status(response.status).json(response.data);
 // });
 
 // app.post("/protected/recommendation", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 //   const response = await axios.post("http://pythonserver:27018/recommendation", {
 //     category  : req.body.category
 //   });
-//   res.json(response.data);
+//   res.status(response.status).json(response.data);
 // });
 
 // app.get ("/protected/extract-text-from-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 //   const response = await axios.get ("http://pythonserver:27018/extract-text-from-image");
-//   res.json(response.data);
+//   res.status(response.status).json(response.data);
 // });
 
 // app.post("/protected/extract-text-from-image", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 //   const response = await axios.post("http://pythonserver:27018/extract-text-from-image", {
 //     image_url : req.body.image_url
 //   });
-//   res.json(response.data);
+//   res.status(response.status).json(response.data);
 // });
 
 app.listen(port, () => {
@@ -160,12 +198,21 @@ app.listen(port, () => {
 });
 
 import mongoose from "mongoose";
-app.get("/nuke", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.get("/nuke/mongo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     // throw new Error("test");
     await Promise.all(Object.values(mongoose.connection.collections).map((collection) =>
        collection.deleteMany({})
     ));
+    res.status(200).json({ "msg": "ok" });
+  } catch (err) {
+    res.status(500).json({ "msg": err, });
+  }
+});
+
+app.get("/nuke/redis", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    await redisClient.flushAll();
     res.status(200).json({ "msg": "ok" });
   } catch (err) {
     res.status(500).json({ "msg": err, });
@@ -274,7 +321,7 @@ app.get("/init", async (req: express.Request, res: express.Response, next: expre
 app.get("/checkgeo", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const response = await axios.get("http://pythonserver:27018/checkgeo");
-    res.json(response.data);
+    res.status(response.status).json(response.data);
   } catch (err) {
     next  (err);
   }
