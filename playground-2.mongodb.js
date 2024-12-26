@@ -19,6 +19,7 @@ const axios = require("axios").default;
 
 
 (async () => {
+    const response0 = await axios.get("http://geodb-free-service.wirefreethought.com/v1/geo/cities?hateoasMode=off")
     const payWithLists = [        "cash","momo", "wallet"   ]
     const clientCursor = (db.users.find({ role : "client" }))
     const clients      = [                                  ]
@@ -32,7 +33,7 @@ const axios = require("axios").default;
         let      otherClients =      clients.filter(otherClient => otherClient._id !== client._id)
         for (let otherClient of otherClients) {
 
-            const response0 = await axios.get("http://geodb-free-service.wirefreethought.com/v1/geo/cities?hateoasMode=off")
+            
 
 
 
@@ -43,11 +44,14 @@ const axios = require("axios").default;
             const address1 = `${response1.data.data[0].city}, ${response1.data.data[0].country}`;
             const address2 = `${response2.data.data[0].city}, ${response2.data.data[0].country}`;
 
-            const response3 = await axios.get("https://waseminarcnpm2.azurewebsites.net/protected/hub/near", {
-                params: {
-                    address: address1,
-                }
-            })
+            // const response3 = await axios.get("https://waseminarcnpm2.azurewebsites.net/protected/hub/near", {
+            //     params: {
+            //         address: address1,
+            //     }
+            // })
+
+            let rn = getRandomInt(1, 4)
+            let hu = await db.hubs.findOne({ name: `Hub ${rn}` })
 
             await db.orders.insertOne({
                   senderInfo: {
@@ -71,7 +75,7 @@ const axios = require("axios").default;
                     pickupTime  :      "00:00"         ,
                     value       : getRandomInt(10, 100),
                 },
-                hubId    : response3.data._id,
+                hubId    :  hu._id           ,
                 message  : "message"         ,
                 payStatus: "pending"         ,
                 payWith  : payWithLists[getRandomInt(0, 2)],
