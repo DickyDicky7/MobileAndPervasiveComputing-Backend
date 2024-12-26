@@ -37,8 +37,9 @@ user.methods.ComparePassword =function (password: string): Promise<boolean> {
 };
 
 export const ensureUserExists: express.RequestHandler = async(req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const roles = Object.values(UserRole);
-    const promises = (Array.from({length: 10}, (_, index) => index + 1)).map(async (index) => {
+    const    roles = Object.values(
+          UserRole                );
+    const promises = (Array.from({length: 20}, (_, index) => index + 1)).map(async (index) => {
         for (var role of roles) {
             const newUsername = `${role.slice(0,2)}${index}` /* `${role}_username_${index}` */;
             const newPassword = `${role.slice(0,2)}${index}` /* `${role}_password_${index}` */;
