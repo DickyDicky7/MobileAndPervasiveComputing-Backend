@@ -35,7 +35,7 @@ def get_order_detail(orders_list):
 
     for order in orders_list:
         hub_id = str(order["hubId"])
-        hub = hubs.find_one({"_id": hub_id})
+        hub = hubs.find_one({"_id": ObjectId(hub_id)})
         hub_name = hub["name"] if hub else "Unknown Hub"
 
         # Append order details with computed data
