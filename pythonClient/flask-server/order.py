@@ -74,26 +74,40 @@ def get_orders_by_status():
 @cross_origin()
 def search_from_all_orders():
     search_str = request.args.get('search', default='', type=str)
+    status = request.args.get('status')
+
+    if not status:
+        return jsonify({"error": "status parameter is required"}), 400
+
+    valid_statuses = ["pending", "inProgress", "success", "failed", "canceled"]
+    if status not in valid_statuses:
+        return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
+
 
     query = {
-        "$or": [
-            {"hubName": {"$regex": search_str, "$options": "i"}},
-            {"hubId": {"$regex": search_str, "$options": "i"}},
-            {"receiverInfo.name": {"$regex": search_str, "$options": "i"}},
-            {"senderInfo.name": {"$regex": search_str, "$options": "i"}},
-            {"deliveryInfo.deliveryType": {"$regex": search_str, "$options": "i"}},
-            {"deliveryInfo.status": {"$regex": search_str, "$options": "i"}},
-            {"message": {"$regex": search_str, "$options": "i"}},
-            {"payStatus": {"$regex": search_str, "$options": "i"}},
-            {"payWith": {"$regex": search_str, "$options": "i"}},
-            {"receiverInfo.address": {"$regex": search_str, "$options": "i"}},
-            {"senderInfo.address": {"$regex": search_str, "$options": "i"}},
+        "$and": [
+            {"deliveryInfo.status": status},
+            {
+                "$or": [
+                    {"hubName": {"$regex": search_str, "$options": "i"}},
+                    {"hubId": {"$regex": search_str, "$options": "i"}},
+                    {"receiverInfo.name": {"$regex": search_str, "$options": "i"}},
+                    {"senderInfo.name": {"$regex": search_str, "$options": "i"}},
+                    {"deliveryInfo.deliveryType": {"$regex": search_str, "$options": "i"}},
+                    {"deliveryInfo.status": {"$regex": search_str, "$options": "i"}},
+                    {"message": {"$regex": search_str, "$options": "i"}},
+                    {"payStatus": {"$regex": search_str, "$options": "i"}},
+                    {"payWith": {"$regex": search_str, "$options": "i"}},
+                    {"receiverInfo.address": {"$regex": search_str, "$options": "i"}},
+                    {"senderInfo.address": {"$regex": search_str, "$options": "i"}},
+                    {"_id": {"$regex": search_str, "$options": "i"}}
+                ]
+            }
         ]
     }
     if ObjectId.is_valid(search_str):
         query["$or"].append({"_id": ObjectId(search_str)}),
 
-    
     res = list(
             orders.find(query)
         )
@@ -318,18 +332,22 @@ def search_order_by_row_num_status():
     
 
     query = {
+            "$and": [
+            {"deliveryInfo.status": status},
+            {
+
                 "$or": 
                 [
                     {"_id": {"$regex": search_str, "$options": "i"}}
                 ]
             }
+        ]
+    }
     if ObjectId.is_valid(search_str):
         query["$or"].append({"_id": ObjectId(search_str)})    
 
-    orders_list = orders.find({"deliveryInfo.status": status})
-
     res = list(
-            orders_list.find(query)
+            orders.find(query)
             .skip(number_row)
             .limit(limit)
         )
@@ -350,7 +368,7 @@ def count_order_status():
         return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
 
 
-    res = orders.find({"deliveryInfo.status": status}).count_documents({})
+    res = orders.count_documents({"deliveryInfo.status": status})
     return jsonify({"count": res}), 200
 
 # Count hub and display from number rows
