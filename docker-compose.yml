@@ -51,6 +51,7 @@ services:
       COLLAB_API_KEY:     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
       MONGO_DB : mongodb+srv://root:123@cluster0.ppxonhm.mongodb.net/lift?retryWrites=true&w=majority&appName=Cluster0
       GOOGLE_MAP_API:  668551c9e921e378819210twyca5b8f
+      GEO_CODING_API:  f650506253b34d5482b87e9459cd7823
       REDIS_URL: redis://redis:6379
       MONGO_URL: mongodb+srv://root:123@cluster0.ppxonhm.mongodb.net/lift?retryWrites=true&w=majority&appName=Cluster0
       MOMO_ACCESS_KEY: F8BBA842ECF85

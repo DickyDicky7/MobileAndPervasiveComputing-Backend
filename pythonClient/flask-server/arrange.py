@@ -16,7 +16,8 @@ CORS(arrange_bp)
 
 # Connect to MongoDB
 client = MongoClient(os.environ.get("MONGO_DB"))
-maps_key = os.environ.get("GOOGLE_MAP_API")
+maps_key      = os.environ.get("GOOGLE_MAP_API")
+geocoding_key = os.environ.get("GEO_CODING_API") 
 
 db = client.lift
 CORS(arrange_bp)
@@ -135,7 +136,7 @@ def parse_json(data):
 
 
 def geocode_address(address):
-    url = f'https://api.opencagedata.com/geocode/v1/json?key=0348f6405b984fc6a71cc571e8dfe485&q='+address+'&pretty=1&language=native'
+    url = f'https://api.opencagedata.com/geocode/v1/json?key='+geocoding_key+'&q='+address+'&pretty=1&language=native'
     response = requests.get(url)
     if         response.status_code == 200:
         # return response.json()
