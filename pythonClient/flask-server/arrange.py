@@ -176,6 +176,7 @@ def solve_vrp(data):
     return routes
 
 
+
 def get_delivery_detail(deliveries_list):
     result = []
 
@@ -219,8 +220,11 @@ def assign_delivery_tasks():
         return jsonify({'error': 'Step 1 wrong'}), 400
 
     data   = create_data_model(orders_pending, staff_members, hub)
+    # print(data)
+    
     routes = solve_vrp(data)
-
+    print(routes)
+    
     if not routes:
         return jsonify({'error': 'Step 2 wrong'}), 400
 
