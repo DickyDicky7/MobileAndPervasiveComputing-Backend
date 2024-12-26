@@ -133,16 +133,18 @@ def parse_json(data):
                 data['insertedId'] = str(data['insertedId']["$oid"])
     return data
 
+
 def geocode_address(address):
-    url = f'https://geocode.maps.co/search?q='+address+'&api_key='+maps_key
+    url = f'https://api.opencagedata.com/geocode/v1/json?key=0348f6405b984fc6a71cc571e8dfe485&q='+address+'&pretty=1&language=native'
     response = requests.get(url)
-    if response.status_code == 200:
+    if         response.status_code == 200:
         # return response.json()
         result = parse_json(response.json())
-        if result:
-            location = result[0]
-            return location['lat'], location['lon']
-    return None, None
+        if             result:
+            location = result['results'][0]['geometry']
+            return   location[  'lat'  ] ,   location [  'lng'  ]
+    return None , None
+
 
 @arrange_bp.route('/checkgeo', methods=['GET'])
 @cross_origin()
