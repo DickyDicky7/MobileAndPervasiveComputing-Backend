@@ -193,9 +193,9 @@ def solve_vrp(data):
     dimension_name = 'Distance'
     routing.AddDimension(
         transit_callback_index,
-        0,  # không có khoảng trống
-        3000,  # khoảng cách tối đa của phương tiện
-        True,  # bắt đầu từ số 0
+                0     , # không_ có__ khoảng trống ___ ______ ____
+                300000, # khoảng cách tối___ đa___ của phương tiện
+                  True, # bắt___ đầu_ từ____ số___ 0__ ______ ____
         dimension_name)
     
     # def cost_callback(from_index, to_index, vehicle_index):
