@@ -14,6 +14,8 @@ import   assignRoute from "./router/assign"  ;
 import deliveryRoute from "./router/delivery";
 import   one_signalRoute from "./router/one.signal.s";
 import notificationRoute from "./router/notification";
+import     coordinatorRoute from
+ "./router/coordinator"              ;
 import passport  from "./passportJwt";
 import { ensureUserExists, getUserIdByUsername } from "./mongoose_schemas/user";
 import { getOrdersByUserIdAndStatus
@@ -110,6 +112,7 @@ app.use("/protected", async (req: express.Request, res: express.Response, next: 
   app.use("/protected", deliveryRoute);
   app.use("/protected",   one_signalRoute);
   app.use("/protected", notificationRoute);
+  app.use("/protected",  coordinatorRoute);
 
   app.get("/"   , async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.json({ "msg": "Hello 1" });
