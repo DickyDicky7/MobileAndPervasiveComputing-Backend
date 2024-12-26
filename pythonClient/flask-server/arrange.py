@@ -211,9 +211,9 @@ def get_delivery_detail(deliveries_list):
 @cross_origin()
 def assign_delivery_tasks():
     hub_id = request.json['hubId']
-    hub = hubs.find_one({'_id': ObjectId(hub_id)})
-    orders_pending = list(orders.find({'hubId': ObjectId(hub_id), 'status': 'pending'}))
-    staff_members = list(staffs.find({'hubId': ObjectId(hub_id)}))
+    hub    =    hubs.find_one({'_id': ObjectId(hub_id)})
+    orders_pending = list(orders.find({'hubId': ObjectId(hub_id), 'deliveryInfo.status': 'pending'}))
+    staff_members  = list(staffs.find({'hubId': ObjectId(hub_id),                                 }))
 
     if not hub or not orders_pending or not staff_members:
         return jsonify({'error': 'Step 1 wrong'}), 400
@@ -250,26 +250,23 @@ def assign_delivery_tasks():
 @cross_origin()
 def update_delivery_status():
     delivery_id = request.json['deliveryId']
-    status      = request.json[  'status'  ]
-    delivery    = deliveries.find_one({'_id': ObjectId(delivery_id)})
+    status = request.json['status']
+    delivery = deliveries.find_one({'_id': ObjectId(delivery_id)})
 
     if not delivery:
         return jsonify({'error': 'delivery not found'}), 400
 
     deliver_times = delivery.get('deliverTimes', 0)
-    if   status == 'success'       :
-        deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': 'success'}})
-        orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'success'}})
-    elif status ==         'failed':
+    if status == 'success':
+        deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'success'}})
+        orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'success'}})
+    elif status == 'failed':
         deliver_times = delivery.get('deliverTimes', 0) + 1
         if deliver_times >= 3:
-            deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': 'failed'}})
-            orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': 'failed'}})
+            deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'status': 'failed'}})
+            orders.update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'status': 'failed'}})
         else:
             deliveries.update_one({'_id': ObjectId(delivery_id)}, {'$set': {'deliverTimes': deliver_times}})
-    else:
-        deliveries.update_one({'_id': ObjectId(delivery_id        )}, {'$set': {             'status': status}})
-#       orders    .update_one({'_id': ObjectId(delivery['orderId'])}, {'$set': {'deliveryInfo.status': status}})
 
     return jsonify({'status': 'updated', 'deliverTimes': deliver_times}), 200
 
@@ -282,7 +279,7 @@ def get_delivery_by_id():
     if not delivery_id:
         return jsonify({"error": "delivery_id parameter is required"}), 400
     
-    deliveries_list = deliveries.find({"_id": ObjectId(delivery_id)})
+    deliveries_list = deliveries.find({"_id": delivery_id})
     return parse_json(deliveries_list), 200
 
 ## Get all delivery
@@ -315,7 +312,7 @@ def get_deliveries_by_hub_id():
     if not hub_id:
         return jsonify({"error": "hub_id parameter is required"}), 400
     
-    delivery_list = deliveries.find({"hubId": ObjectId(hub_id)})
+    delivery_list = deliveries.find({"hubId": (hub_id)})
     order_list = []
     for order in delivery_list:
         order_list.append(order)
@@ -329,7 +326,7 @@ def get_deliveries_by_staffId():
     if not staff_id:
         return jsonify({"error": "staff_id parameter is required"}), 400
     
-    delivery_list = deliveries.find({"staffId": ObjectId(staff_id)})
+    delivery_list = deliveries.find({"staffId": (staff_id)})
     order_list = []
     for order in delivery_list:
         order_list.append(order)
