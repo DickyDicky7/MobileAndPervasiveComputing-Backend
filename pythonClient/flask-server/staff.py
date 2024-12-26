@@ -37,6 +37,54 @@ def get_all_staff():
     all_staff = staffs.find()
     return parse_json(all_staff), 200
 
+@staff_bp.route('/staffs/hub', methods=['GET'])
+@cross_origin()
+def get_all_staff_by_hub_id():
+    hub_id = request.args.get('hubId')
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    all_staff = staffs.find({"hubId": ObjectId(hub_id)})
+
+    return parse_json(all_staff), 200
+
+@staff_bp.route('/staffs/search/hub', methods=['GET'])
+@cross_origin()
+def search_staff_by_hub_id():
+    search_str = request.args.get('search', default='', type=str)
+    hub_id = request.args.get('hubId')
+
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    query = {
+            "$and": [
+            {"hubId": ObjectId(hub_id)},
+            {
+                "$or": 
+                [
+                    {"name": {"$regex": search_str, "$options": "i"}},
+                    {"age": {"$regex": search_str, "$options": "i"}},
+                    {"gender": {"$regex": search_str, "$options": "i"}},
+                    {"motorcycleCapacity": {"$regex": search_str, "$options": "i"}},
+                    {"weight": {"$regex": search_str, "$options": "i"}}
+                ]
+            }
+        ]
+    }
+    if ObjectId.is_valid(search_str):
+        query["$and"][1]["$or"].extend([
+            {"userId": ObjectId(search_str)},
+            {"_id": ObjectId(search_str)}
+        ])
+
+    response = list(
+            staffs.find(query)
+        )
+
+    return parse_json(response), 200
+
+
 @staff_bp.route('/staff', methods=['GET'])
 @cross_origin()
 def get_staff():

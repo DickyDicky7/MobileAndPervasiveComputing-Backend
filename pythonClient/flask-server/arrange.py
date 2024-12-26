@@ -325,6 +325,31 @@ def get_deliveries_by_hub_id():
         order_list.append(order)
     return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
 
+@arrange_bp.route('/deliveries/status/hub', methods=['GET'])
+@cross_origin()
+def get_deliveries_by_status_by_hub_id():
+    status = request.args.get('status')
+    hub_id = request.args.get('hubId')
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    if not status:
+        return jsonify({"error": "status parameter is required"}), 400
+
+    valid_statuses = ["pending", "inProgress", "success", "failed", "canceled"]
+    if status not in valid_statuses:
+        return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
+
+    deliveries_list = deliveries.find({
+        "$and": [
+            {"hubId": ObjectId(hub_id)},
+            {"status": status}
+        ]
+    })
+
+    res = get_delivery_detail(parse_json(deliveries_list))
+    return parse_json(res), 200
+
+
 ## Get all delivery matches with staffId
 @arrange_bp.route('/deliveries/staff', methods=['GET'])
 @cross_origin()

@@ -160,6 +160,30 @@ def get_orders_by_hub_id():
     res = get_order_detail(order_list)
     return parse_json(res), 200
 
+@order_bp.route('/orders/status/hub', methods=['GET'])
+@cross_origin()
+def get_orders_by_status_and_hub_id():
+    status = request.args.get('status')
+    hub_id = request.args.get('hubId')
+    if not status:
+        return jsonify({"error": "status parameter is required"}), 400
+
+    valid_statuses = ["pending", "inProgress", "success", "failed", "canceled"]
+    if status not in valid_statuses:
+        return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
+
+
+    orders_list = orders.find({
+        "$and": [
+            {"hubId": ObjectId(hub_id)},
+            {"deliveryInfo.status": status}
+        ]
+    })
+
+    res = get_order_detail(orders_list)
+    return parse_json(res), 200
+
+
 ## Get order by id
 @order_bp.route('/order', methods=['GET'])
 @cross_origin()
@@ -316,6 +340,57 @@ def get_order_by_row_num_status():
     return parse_json(response), 200
 
 # Search hub and display from number rows
+@order_bp.route('/order/search/hub', methods=['GET'])
+@cross_origin()
+def search_order_by_hub_id():
+    search_str = request.args.get('search', default='', type=str)
+    hub_id = request.args.get('hubId')
+
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    query = {
+            "$and": [
+            {"hubId": ObjectId(hub_id)},
+            {
+                "$or": 
+                [
+                    {"deliveryInfo.deliveryType": {"$regex": search_str}},
+                    {"deliveryInfo.packageSize": {"$regex": search_str}},
+                    {"deliveryInfo.pickupDate": {"$regex": search_str}},
+                    {"deliveryInfo.pickupTime": {"$regex": search_str}},
+                    {"deliveryInfo.shipmentType": {"$regex": search_str}},
+                    {"deliveryInfo.status": {"$regex": search_str}},
+                    {"deliveryInfo.value": {"$regex": search_str}},
+                    {"hubName": {"$regex": search_str}},
+                    {"message": {"$regex": search_str}},
+                    {"payStatus": {"$regex": search_str}},
+                    {"payWith": {"$regex": search_str}},
+                    {"receiverInfo.address": {"$regex": search_str}},
+                    {"receiverInfo.name": {"$regex": search_str}},
+                    {"receiverInfo.phone": {"$regex": search_str}},
+                    {"senderInfo.address": {"$regex": search_str}},
+                    {"senderInfo.name": {"$regex": search_str}},
+                    {"senderInfo.phone": {"$regex": search_str}},
+                ]
+            }
+        ]
+    }
+    if ObjectId.is_valid(search_str):
+        query["$and"][1]["$or"].extend([
+            {"receiverInfo.userId": ObjectId(search_str)},
+            {"senderInfo.userId": ObjectId(search_str)},
+            {"_id": ObjectId(search_str)}
+        ])
+
+    res = list(
+            orders.find(query)
+        )
+
+    response = get_order_detail(res)
+    return parse_json(response), 200
+
+# Search hub and display from number rows
 @order_bp.route('/order/search/status', methods=['GET'])
 @cross_origin()
 def search_order_by_row_num_status():
@@ -329,22 +404,40 @@ def search_order_by_row_num_status():
     if status not in valid_statuses:
         return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
 
-    
-
     query = {
             "$and": [
             {"deliveryInfo.status": status},
             {
-
                 "$or": 
                 [
-                    {"_id": {"$regex": search_str, "$options": "i"}}
+                    {"deliveryInfo.deliveryType": {"$regex": search_str}},
+                    {"deliveryInfo.packageSize": {"$regex": search_str}},
+                    {"deliveryInfo.pickupDate": {"$regex": search_str}},
+                    {"deliveryInfo.pickupTime": {"$regex": search_str}},
+                    {"deliveryInfo.shipmentType": {"$regex": search_str}},
+                    {"deliveryInfo.status": {"$regex": search_str}},
+                    {"deliveryInfo.value": {"$regex": search_str}},
+                    {"hubName": {"$regex": search_str}},
+                    {"message": {"$regex": search_str}},
+                    {"payStatus": {"$regex": search_str}},
+                    {"payWith": {"$regex": search_str}},
+                    {"receiverInfo.address": {"$regex": search_str}},
+                    {"receiverInfo.name": {"$regex": search_str}},
+                    {"receiverInfo.phone": {"$regex": search_str}},
+                    {"senderInfo.address": {"$regex": search_str}},
+                    {"senderInfo.name": {"$regex": search_str}},
+                    {"senderInfo.phone": {"$regex": search_str}},
                 ]
             }
         ]
     }
     if ObjectId.is_valid(search_str):
-        query["$or"].append({"_id": ObjectId(search_str)})    
+        query["$and"][1]["$or"].extend([
+            {"hubId": ObjectId(search_str)},
+            {"receiverInfo.userId": ObjectId(search_str)},
+            {"senderInfo.userId": ObjectId(search_str)},
+            {"_id": ObjectId(search_str)}
+        ])
 
     res = list(
             orders.find(query)
@@ -389,23 +482,41 @@ def count_order_by_row_num_status():
     if status not in valid_statuses:
         return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
 
-    
-
     query = {
+            "$and": [
+            {"deliveryInfo.status": status},
+            {
                 "$or": 
                 [
-                    {"_id": {"$regex": search_str, "$options": "i"}}
+                    {"deliveryInfo.deliveryType": {"$regex": search_str}},
+                    {"deliveryInfo.packageSize": {"$regex": search_str}},
+                    {"deliveryInfo.pickupDate": {"$regex": search_str}},
+                    {"deliveryInfo.pickupTime": {"$regex": search_str}},
+                    {"deliveryInfo.shipmentType": {"$regex": search_str}},
+                    {"deliveryInfo.status": {"$regex": search_str}},
+                    {"deliveryInfo.value": {"$regex": search_str}},
+                    {"hubName": {"$regex": search_str}},
+                    {"message": {"$regex": search_str}},
+                    {"payStatus": {"$regex": search_str}},
+                    {"payWith": {"$regex": search_str}},
+                    {"receiverInfo.address": {"$regex": search_str}},
+                    {"receiverInfo.name": {"$regex": search_str}},
+                    {"receiverInfo.phone": {"$regex": search_str}},
+                    {"senderInfo.address": {"$regex": search_str}},
+                    {"senderInfo.name": {"$regex": search_str}},
+                    {"senderInfo.phone": {"$regex": search_str}},
                 ]
             }
+        ]
+    }
     if ObjectId.is_valid(search_str):
-        query["$or"].append({"_id": ObjectId(search_str)})    
+        query["$and"][1]["$or"].extend([
+            {"hubId": ObjectId(search_str)},
+            {"receiverInfo.userId": ObjectId(search_str)},
+            {"senderInfo.userId": ObjectId(search_str)},
+            {"_id": ObjectId(search_str)}
+        ])
     
-    orders_list = orders.find({"deliveryInfo.status": status})
-
-    res = list(
-            orders_list.find(query)
-            .skip(number_row)
-            .limit(limit)
-        ).count({})
+    res = orders.count_documents(query)
 
     return jsonify({"count": res}), 200
