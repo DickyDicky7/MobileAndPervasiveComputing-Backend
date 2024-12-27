@@ -244,7 +244,7 @@ def assign_delivery_tasks():
             deliveries .insert_one(assignment)
             assignments.append    (assignment)
 
-            orders.update_one({'_id': order['_id']}, {'$set': {'deliveryInfo.status': 'inProgress'}})
+            # orders.update_one({'_id': order['_id']}, {'$set': {'deliveryInfo.status': 'inProgress'}})
 
     return jsonify(parse_json(assignments)), 200
 

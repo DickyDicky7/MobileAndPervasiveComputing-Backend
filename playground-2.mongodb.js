@@ -29,6 +29,7 @@ const axios = require("axios").default;
     }
     console.log(clients)
     console.log(clients.length)
+    //   let client =  clients[0]
     for (let client of clients) {
         let      otherClients =      clients.filter(otherClient => otherClient._id !== client._id)
         for (let otherClient of otherClients) {
@@ -55,16 +56,20 @@ const axios = require("axios").default;
 
             await db.orders.insertOne({
                   senderInfo: {
-                    userId : client._id     ,
-                    name   : client.username,
-                    address:        address1,
-                    phone  :    "0903089085",
+                    userId :      client._id     ,
+                    name   :      client.username,
+                    address:             address1,
+                    phoneNumber    : "0903089085",
+                    _id: ObjectId(),
+                    __v: 0         ,
                 },
                 receiverInfo: {
                     userId : otherClient._id     ,
                     name   : otherClient.username,
                     address:             address2,
-                    phone  :         "0903089085",
+                    phoneNumber    : "0903089085",
+                    _id: ObjectId(),
+                    __v: 0         ,
                 },
                 deliveryInfo: {
                     shipmentType: "Document"           ,
@@ -74,11 +79,14 @@ const axios = require("axios").default;
                     pickupDate  : "2025-01-01"         ,
                     pickupTime  :      "00:00"         ,
                     value       : getRandomInt(10, 100),
+                    _id: ObjectId(),
+                    __v: 0         ,
                 },
                 hubId    :  hu._id           ,
                 message  : "message"         ,
                 payStatus: "pending"         ,
                 payWith  : payWithLists[getRandomInt(0, 2)],
+                __v: 0,
             })
         }
     }
