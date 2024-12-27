@@ -10,6 +10,7 @@ import json
 import requests  # type: ignore
 import os
 from flask_cors import CORS, cross_origin # type: ignore
+from arrange import parse_json
 
 staff_bp = Blueprint("staff",__name__)
 CORS(staff_bp)
@@ -28,27 +29,6 @@ orders = db.orders
 staffs = db.staffs
 deliveries = db.deliveries
 
-# Helper function to parse JSON
-def parse_json(data):
-    data = json.loads(json_util.dumps(data))
-    if isinstance(data, list):
-        for item in data:
-            if 'hubId' in item:
-                if '$oid' in item.get('hubId', {}):
-                    item['hubId'] = str(item['hubId']["$oid"])
-            if '_id' in item:
-                item['_id'] = str(item['_id']["$oid"])
-            if 'insertedId' in item:
-                item['insertedId'] = str(item['insertedId']["$oid"])
-    else:
-        if 'hubId' in data:
-            data['hubId'] = str(data['hubId']["$oid"])
-        if '_id' in data:
-                data['_id'] = str(data['_id']["$oid"])
-        if 'insertedId' in data:
-                data['insertedId'] = str(data['insertedId']["$oid"])
-    return data
-
 # Staff Endpoints
 
 @staff_bp.route('/staffs', methods=['GET'])
@@ -56,6 +36,54 @@ def parse_json(data):
 def get_all_staff():
     all_staff = staffs.find()
     return parse_json(all_staff), 200
+
+@staff_bp.route('/staffs/hub', methods=['GET'])
+@cross_origin()
+def get_all_staff_by_hub_id():
+    hub_id = request.args.get('hubId')
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    all_staff = staffs.find({"hubId": ObjectId(hub_id)})
+
+    return parse_json(all_staff), 200
+
+@staff_bp.route('/staffs/search/hub', methods=['GET'])
+@cross_origin()
+def search_staff_by_hub_id():
+    search_str = request.args.get('search', default='', type=str)
+    hub_id = request.args.get('hubId')
+
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    
+    query = {
+            "$and": [
+            {"hubId": ObjectId(hub_id)},
+            {
+                "$or": 
+                [
+                    {"name": {"$regex": search_str, "$options": "i"}},
+                    {"age": {"$regex": search_str, "$options": "i"}},
+                    {"gender": {"$regex": search_str, "$options": "i"}},
+                    {"motorcycleCapacity": {"$regex": search_str, "$options": "i"}},
+                    {"weight": {"$regex": search_str, "$options": "i"}}
+                ]
+            }
+        ]
+    }
+    if ObjectId.is_valid(search_str):
+        query["$and"][1]["$or"].extend([
+            {"userId": ObjectId(search_str)},
+            {"_id": ObjectId(search_str)}
+        ])
+
+    response = list(
+            staffs.find(query)
+        )
+
+    return parse_json(response), 200
+
 
 @staff_bp.route('/staff', methods=['GET'])
 @cross_origin()

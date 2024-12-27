@@ -10,6 +10,7 @@ import json
 import requests  # type: ignore
 import os
 from flask_cors import CORS, cross_origin # type: ignore
+from arrange import parse_json
 
 hub_bp = Blueprint("hub",__name__)
 CORS(hub_bp)
@@ -29,28 +30,6 @@ orders = db.orders
 staffs = db.staffs
 deliveries = db.deliveries
 
-# Helper function to parse JSON
-def parse_json(data):
-    data = json.loads(json_util.dumps(data))
-    if isinstance(data, list):
-        for item in data:
-            if 'hubId' in item:
-                if '$oid' in item.get('hubId', {}):
-                    item['hubId'] = str(item['hubId']["$oid"])
-            if '_id' in item:
-                item['_id'] = str(item['_id']["$oid"])
-            if 'insertedId' in item:
-                item['insertedId'] = str(item['insertedId']["$oid"])
-    else:
-        if 'hubId' in data:
-            data['hubId'] = str(data['hubId']["$oid"])
-        if '_id' in data:
-                data['_id'] = str(data['_id']["$oid"])
-        if 'insertedId' in data:
-                data['insertedId'] = str(data['insertedId']["$oid"])
-    return data
-
-
 def geocode_address(address):
     url = f'https://api.opencagedata.com/geocode/v1/json?key='+geocoding_key+'&q='+address+'&pretty=1&language=native'
     response = requests.get(url)
@@ -62,6 +41,46 @@ def geocode_address(address):
             return   location[  'lat'  ] ,   location [  'lng'  ]
     return None , None
 
+
+def get_hub_detail(hubs_list):
+    result = []
+
+    for hub in hubs_list:
+        hub_id = str(hub["_id"])
+
+        # Query orders related to the current hub
+        orders_list = list(orders.find({"hubId": ObjectId(hub_id)}))
+
+        # Count orders by status
+        success_orders = sum(1 for order in orders_list if order["deliveryInfo"]["status"] == "success")
+        failed_orders = sum(1 for order in orders_list if order["deliveryInfo"]["status"] == "failed")
+        in_progress_orders = sum(1 for order in orders_list if order["deliveryInfo"]["status"] == "inProgress")
+        pending_orders = sum(1 for order in orders_list if order["deliveryInfo"]["status"] == "pending")
+        canceled_orders = sum(1 for order in orders_list if order["deliveryInfo"]["status"] == "canceled")
+
+        # Append hub details with computed data
+        result.append({
+            "hubId": str(hub_id),
+            "name": hub["name"],
+            "address": hub["address"],
+            "successOrders": success_orders,
+            "failedOrders": failed_orders,
+            "canceledOrders": canceled_orders,
+            "inProgressOrders": in_progress_orders,
+            "pendingOrders": pending_orders,
+        })
+    return result
+
+
+@hub_bp.route('/address', methods=['GET'])
+@cross_origin()
+def get_address():
+    address = request.args.get('address')
+    url = 'https://geocode.maps.co/search?q='+address+'&api_key='+maps_key
+    response = requests.get(url)
+    if response.status_code == 200:
+        return (parse_json(response.json())), 200
+    return ({'result':'failed'}), 200
 
 @hub_bp.route('/checkgeo', methods=['GET'])
 @cross_origin()
@@ -86,6 +105,14 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def get_all_hubs():
     all_hubs = hubs.find()
     return parse_json(all_hubs), 200
+
+@hub_bp.route("/hubs/detail", methods=["GET"])
+@cross_origin()
+def get_hubs_with_details():
+    hubs_list = list(hubs.find())
+    result = get_hub_detail(hubs_list)
+    return parse_json(result), 200
+
 
 @hub_bp.route('/hub', methods=['GET'])
 @cross_origin()
@@ -180,8 +207,9 @@ def get_hub_by_row_num():
             .skip(number_row)
             .limit(limit)
         )
-
-    return parse_json(res), 200
+    
+    result = get_hub_detail(res)
+    return parse_json(result), 200
 
 # Search from all hub 
 @hub_bp.route('/hubs/search', methods=['GET'])
@@ -203,7 +231,8 @@ def search_from_all_hub():
             hubs.find(query)
         )
 
-    return parse_json(res), 200
+    result = get_hub_detail(res)
+    return parse_json(result), 200
 
 
 # Search hub and display from number rows
@@ -230,7 +259,8 @@ def search_hub_by_row_num():
             .limit(limit)
         )
 
-    return parse_json(res), 200
+    result = get_hub_detail(res)
+    return parse_json(result), 200
 
 # Count all hub
 @hub_bp.route('/hubs/count', methods=['GET'])

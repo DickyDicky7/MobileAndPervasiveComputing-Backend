@@ -29,90 +29,6 @@ orders = db.orders
 staffs = db.staffs
 deliveries = db.deliveries
 
-# Sample data
-sample_hubs = [
-    {"_id": ObjectId("66851d686a086a68a695c186"), "name": "Hub 1", "address": "Hẻm 196 Lê Thị Bạch Cát, Ho Chi Minh City, Ho Chi Minh 72000, Vietnam"},
-    {"_id": ObjectId("66851d686a086a68a695c187"), "name": "Hub 2", "address": "Đường Nguyễn Án, Ho Chi Minh City, Ho Chi Minh, Vietnam"}
-]
-
-sample_orders = [
-       {
-           "_id": ObjectId("66851e166a086a68a695c187"),
-            "shipmentType": "Express",
-            "deliveryType": "Home Delivery",
-            "senderInfo": {
-                "userId": "sender1",
-                "name": "Sender Name 1",
-                "address": "Sender Address 1",
-                "phoneNumber": "123-456-7890"
-            },
-            "receiverInfo": {
-                "userId": "receiver1",
-                "name": "Receiver Name 1",
-                "address": "Receiver Address 1",
-                "phoneNumber": "987-654-3210"
-            },
-            "weight": 5.5,
-            "status": "pending",
-            "packageSize": 2,
-            "pickupDate": "2024-07-01",
-            "pickupTime": "14:00",
-            "value": 150.75,
-            "hubId": ObjectId("66851d686a086a68a695c186"),
-            "deliveryAddress": "Nguyễn Biểu, District 5, Ho Chi Minh City, 73009, Vietnam",
-            "message": "Handle with care",
-            "inProgress": True
-    },
-    {
-        "_id": ObjectId("66851e166a086a68a695c188"),
-        "shipmentType": "Standard",
-        "deliveryType": "Store Pickup",
-        "senderInfo": {
-            "userId": "sender2",
-            "name": "Sender Name 2",
-            "address": "Sender Address 2",
-            "phoneNumber": "123-456-7891"
-        },
-        "receiverInfo": {
-            "userId": "receiver2",
-            "name": "Receiver Name 2",
-            "address": "Receiver Address 2",
-            "phoneNumber": "987-654-3211"
-        },
-        "weight": 10.0,
-        "status": "pending",
-        "packageSize": 5,
-        "pickupDate": "2024-07-02",
-        "pickupTime": "10:30",
-        "value": 75.00,
-        "hubId": ObjectId("66851d686a086a68a695c187"),
-        "deliveryAddress": "Đặng Trần Côn, District 1, Ho Chi Minh City, 71009, Vietnam",
-        "message": "Leave at the door",
-        "inProgress": False
-    },
-]
-
-sample_staffs = [
-    {"_id": ObjectId("66851d316a086a68a695c185"), "name": "John Doe", "age": 25, "gender": "male", "weight": 70, "motorcycleCapacity": 150, "hubId": ObjectId("66851d686a086a68a695c186")},
-    {"_id": ObjectId("66851d316a086a68a695c186"), "name": "Jane Smith", "age": 30, "gender": "female", "weight": 60, "motorcycleCapacity": 100, "hubId": ObjectId("66851d686a086a68a695c187")}
-]
-
-# Insert sample data into the collections
-@arrange_bp.route('/init', methods=['GET'])
-@cross_origin()
-def insert_sample_data():
-    # Insert hubs
-    hubs.insert_many(sample_hubs)
-    
-    # Insert orders
-    orders.insert_many(sample_orders)
-    
-    # Insert staff
-    staffs.insert_many(sample_staffs)
-
-    return("Sample data inserted successfully.")
-
-
 # Helper function to parse JSON
 def parse_json(data):
     data = json.loads(json_util.dumps(data))
@@ -121,17 +37,49 @@ def parse_json(data):
             if 'hubId' in item:
                 if '$oid' in item.get('hubId', {}):
                     item['hubId'] = str(item['hubId']["$oid"])
+            if 'orderId' in item:
+                if '$oid' in item.get('orderId', {}):
+                    item['orderId'] = str(item['orderId']["$oid"])
+            if 'staffId' in item:
+                if '$oid' in item.get('staffId', {}):
+                    item['staffId'] = str(item['staffId']["$oid"])
+            if 'userId' in item:
+                if '$oid' in item.get('userId', {}):
+                    item['userId'] = str(item['userId']["$oid"])
+            if 'senderId' in item:
+                if '$oid' in item.get('senderId', {}):
+                    item['senderId'] = str(item['senderId']["$oid"])
+            if 'receiverId' in item:
+                if '$oid' in item.get('receiverId', {}):
+                    item['receiverId'] = str(item['receiverId']["$oid"])
             if '_id' in item:
                 item['_id'] = str(item['_id']["$oid"])
             if 'insertedId' in item:
                 item['insertedId'] = str(item['insertedId']["$oid"])
+            if 'deliveryInfo' in item: item['deliveryInfo'] = parse_json(item['deliveryInfo'])
+            if 'receiverInfo' in item: item['receiverInfo'] = parse_json(item['receiverInfo'])
+            if 'senderInfo' in item: item['senderInfo'] = parse_json(item['senderInfo'])
+                
     else:
         if 'hubId' in data:
             data['hubId'] = str(data['hubId']["$oid"])
+        if 'orderId' in data:
+            data['orderId'] = str(data['orderId']["$oid"])
+        if 'staffId' in data:
+            data['staffId'] = str(data['staffId']["$oid"])
+        if 'userId' in data:
+            data['userId'] = str(data['userId']["$oid"])
+        if 'senderId' in data:
+            data['senderId'] = str(data['senderId']["$oid"])
+        if 'receiverId' in data:
+            data['receiverId'] = str(data['receiverId']["$oid"])
         if '_id' in data:
                 data['_id'] = str(data['_id']["$oid"])
         if 'insertedId' in data:
                 data['insertedId'] = str(data['insertedId']["$oid"])
+        if 'deliveryInfo' in data: data['deliveryInfo'] = parse_json(data['deliveryInfo'])
+        if 'receiverInfo' in data: data['receiverInfo'] = parse_json(data['receiverInfo'])
+        if 'senderInfo' in data: data['senderInfo'] = parse_json(data['senderInfo'])
     return data
 
 
@@ -193,9 +141,9 @@ def solve_vrp(data):
     dimension_name = 'Distance'
     routing.AddDimension(
         transit_callback_index,
-                0     , # không_ có__ khoảng trống ___ ______ ____
-                300000, # khoảng cách tối___ đa___ của phương tiện
-                  True, # bắt___ đầu_ từ____ số___ 0__ ______ ____
+        0,  # không có khoảng trống
+        300000,  # khoảng cách tối đa của phương tiện
+        True,  # bắt đầu từ số 0
         dimension_name)
     
     # def cost_callback(from_index, to_index, vehicle_index):
@@ -229,6 +177,35 @@ def solve_vrp(data):
 
 
 
+def get_delivery_detail(deliveries_list):
+    result = []
+
+    for delivery in deliveries_list:
+        hub_id = str(delivery["hubId"])
+        staff_id = str(delivery["staffId"])
+
+        # Query hub name
+        hub = hubs.find_one({"_id": ObjectId(hub_id)})
+        hub_name = hub["name"] if hub else "Unknown"
+
+        # Query staff name
+        staff = staffs.find_one({"_id": ObjectId(staff_id)})
+        staff_name = staff["name"] if staff else "Unknown"
+
+        # Append delivery details with computed data
+        result.append({
+            "deliveryId": str(delivery["_id"]),
+            "hubId": hub_id,
+            "hubName": hub_name,
+            "staffId": staff_id,
+            "staffName": staff_name,
+            "orderId": str(delivery["orderId"]),
+            "date": delivery["date"],
+            "deliverTimes": delivery["deliverTimes"],
+            "status": delivery["status"]
+        })
+
+    return result
 # Assign endpoints
 
 @arrange_bp.route('/assign', methods=['POST'])
@@ -243,8 +220,11 @@ def assign_delivery_tasks():
         return jsonify({'error': 'Step 1 wrong'}), 400
 
     data   = create_data_model(orders_pending, staff_members, hub)
+    # print(data)
+    
     routes = solve_vrp(data)
-
+    print(routes)
+    
     if not routes:
         return jsonify({'error': 'Step 2 wrong'}), 400
 
@@ -316,10 +296,25 @@ def get_all_deliveries():
     all_orders = deliveries.find()
     return parse_json(all_orders), 200
 
+@arrange_bp.route('/deliveries/status', methods=['GET'])
+@cross_origin()
+def get_deliveries_by_status():
+    status = request.args.get('status')
+    if not status:
+        return jsonify({"error": "status parameter is required"}), 400
+
+    valid_statuses = ["pending", "inProgress", "success", "failed", "canceled"]
+    if status not in valid_statuses:
+        return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
+
+    deliveries_list = deliveries.find({"status": status})
+    res = get_delivery_detail(parse_json(deliveries_list))
+    return parse_json(res), 200
+
 ## Get all delivery matches with hubId
 @arrange_bp.route('/deliveries/hub', methods=['GET'])
 @cross_origin()
-def get_deliveries_by_hubId():
+def get_deliveries_by_hub_id():
     hub_id = request.args.get('hubId')
     if not hub_id:
         return jsonify({"error": "hub_id parameter is required"}), 400
@@ -329,6 +324,31 @@ def get_deliveries_by_hubId():
     for order in delivery_list:
         order_list.append(order)
     return parse_json( {'list': parse_json(order_list) , 'count': len(order_list)}), 200
+
+@arrange_bp.route('/deliveries/status/hub', methods=['GET'])
+@cross_origin()
+def get_deliveries_by_status_by_hub_id():
+    status = request.args.get('status')
+    hub_id = request.args.get('hubId')
+    if not hub_id:
+        return jsonify({"error": "hub_id parameter is required"}), 400
+    if not status:
+        return jsonify({"error": "status parameter is required"}), 400
+
+    valid_statuses = ["pending", "inProgress", "success", "failed", "canceled"]
+    if status not in valid_statuses:
+        return jsonify({"error": f"Invalid status. Valid statuses are: {', '.join(valid_statuses)}"}), 400
+
+    deliveries_list = deliveries.find({
+        "$and": [
+            {"hubId": ObjectId(hub_id)},
+            {"status": status}
+        ]
+    })
+
+    res = get_delivery_detail(parse_json(deliveries_list))
+    return parse_json(res), 200
+
 
 ## Get all delivery matches with staffId
 @arrange_bp.route('/deliveries/staff', methods=['GET'])
